@@ -19,9 +19,3 @@
 
 ### دانلود فایل اجرایی (ویندوز)
 از [Releases](https://github.com/MrBineery/hamresan/releases) آخرین نسخه را دانلود کنید.
-
-### ساخت از سورس
-```bash
-git clone https://github.com/MrBineery/hamresan
-cd hamresan
-cargo build --release
