@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0ea5e9">
+<title>هم‌رسان · Hamresan</title>
+<style>
+  :root, [data-theme="dark"] {
+    --bg:#0f172a; --bg-elev:#1e293b; --bg-elev-2:#334155; --bg-soft:#1e3a5f;
+    --border:#334155; --border-hi:#475569;
+    --text:#e2e8f0; --text-muted:#94a3b8; --text-dim:#64748b;
+    --accent:#0ea5e9; --accent-hi:#38bdf8; --accent-2:#6366f1;
+    --danger:#7f1d1d; --danger-hi:#991b1b; --danger-text:#fecaca;
+    --shadow:0 4px 20px rgba(0,0,0,.4);
+    --header-grad:linear-gradient(135deg,#0ea5e9,#6366f1);
+  }
+  [data-theme="light"] {
+    --bg:#f1f5f9; --bg-elev:#ffffff; --bg-elev-2:#f8fafc; --bg-soft:#e0f2fe;
+    --border:#e2e8f0; --border-hi:#cbd5e1;
+    --text:#0f172a; --text-muted:#475569; --text-dim:#64748b;
+    --accent:#0284c7; --accent-hi:#0ea5e9; --accent-2:#6366f1;
+    --danger:#fee2e2; --danger-hi:#fecaca; --danger-text:#991b1b;
+    --shadow:0 4px 20px rgba(15,23,42,.08);
+    --header-grad:linear-gradient(135deg,#38bdf8,#818cf8);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Roboto, "Noto Sans", sans-serif;
+    margin: 0; background: var(--bg); color: var(--text);
+    min-height: 100vh; transition: background .2s, color .2s; line-height: 1.5;
+    display: flex; flex-direction: column;
+  }
+
+  header {
+    background: var(--header-grad);
+    padding: 14px 20px;
+    padding-top: calc(14px + env(safe-area-inset-top));
+    box-shadow: var(--shadow);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  .brand { flex: 1; min-width: 0; }
+  .brand h1 { margin: 0; font-size: 18px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand .sub { font-size: 12px; color: rgba(255,255,255,.85); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .icon-btn {
+    background: rgba(255,255,255,.18); color: #fff; border: none; border-radius: 10px;
+    padding: 0; width: 38px; height: 38px; font-size: 16px; cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; transition: background .15s, transform .1s;
+    backdrop-filter: blur(6px);
+  }
+  .icon-btn:hover { background: rgba(255,255,255,.3); }
+  .icon-btn:active { transform: scale(.94); }
+  .icon-btn.text { width: auto; padding: 0 12px; font-weight: 700; font-size: 13px; letter-spacing: .5px; }
+
+  main { padding: 20px; padding-bottom: 8px; max-width: 1200px; margin: 0 auto; width: 100%; flex: 1; }
+  .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) {
+    main { padding: 28px 28px 8px; }
+    .grid {
+      grid-template-columns: 360px 1fr;
+      grid-template-areas:
+        "qr    upload"
+        "clip  clip"
+        "files files";
+      gap: 20px; align-items: stretch;
+    }
+    .side { grid-area: qr; display: flex; }
+    .side .qr-card { width: 100%; }
+    .upload-section { grid-area: upload; display: flex; flex-direction: column; }
+    .upload-section .upload { flex: 1; }
+    .clipboard-section { grid-area: clip; }
+    .files-section { grid-area: files; margin-top: 0 !important; }
+  }
+  @media (min-width: 1300px) { .grid { grid-template-columns: 400px 1fr; } }
+
+  .card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 16px; transition: background .2s, border-color .2s; }
+
+  .qr-card { padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .qr-wrap { background: #fff; border-radius: 12px; padding: 12px; display: inline-block; line-height: 0; box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+  .qr-wrap img { width: 180px; height: 180px; display: block; }
+  @media (min-width: 900px) { .qr-wrap img { width: 200px; height: 200px; } }
+  @media (min-width: 1300px) { .qr-wrap img { width: 240px; height: 240px; } }
+  .qr-card .hint { font-size: 13px; color: var(--text-muted); margin-top: 14px; line-height: 1.7; max-width: 280px; }
+  .url {
+    font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
+    background: var(--bg); color: var(--accent-hi);
+    padding: 10px 14px; border-radius: 10px; margin-top: 12px; font-size: 13px;
+    direction: ltr; user-select: all; word-break: break-all;
+    border: 1px solid var(--border); cursor: pointer; transition: all .15s;
+    max-width: 100%; font-weight: 600;
+  }
+  .url:hover { border-color: var(--accent); background: var(--bg-soft); }
+
+  .upload {
+    border: 2px dashed var(--border); padding: 32px 24px; text-align: center;
+    cursor: pointer; transition: all .2s; min-height: 160px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+  }
+  .upload:hover, .upload.drag { border-color: var(--accent); background: var(--bg-soft); border-style: solid; }
+  .upload .icon { font-size: 44px; margin-bottom: 10px; line-height: 1; transition: transform .2s; }
+  .upload.drag .icon { transform: scale(1.15); }
+  .upload .label { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+  .upload .label strong { color: var(--accent-hi); font-weight: 700; }
+  @media (min-width: 900px) {
+    .upload { padding: 40px 32px; min-height: 220px; }
+    .upload .icon { font-size: 56px; }
+    .upload .label { font-size: 15px; }
+  }
+
+  .progress { display: none; padding: 16px; margin-top: 16px; }
+  .progress.active { display: block; }
+  .progress .name { font-size: 13px; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr; text-align: right; color: var(--text); }
+  [dir="ltr"] .progress .name { text-align: left; }
+  .progress .bar { height: 6px; background: var(--bg-elev-2); border-radius: 3px; overflow: hidden; }
+  .progress .bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); width: 0%; transition: width .15s; }
+
+  .clipboard-card { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .clipboard-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .clipboard-header .title { font-weight: 600; color: var(--text-muted); font-size: 14px; display: flex; align-items: center; gap: 6px; }
+  .clip-actions { display: flex; gap: 6px; }
+  .clip-actions button {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text-muted);
+    font-size: 12px; cursor: pointer; padding: 6px 12px; border-radius: 8px;
+    font-family: inherit; font-weight: 600; transition: all .15s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .clip-actions button:hover { background: var(--bg-soft); border-color: var(--accent); color: var(--accent-hi); }
+  .clip-actions button:active { transform: scale(.96); }
+  .clip-actions button:disabled { opacity: .4; cursor: not-allowed; }
+
+  .clipboard-display {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 60px;
+    max-height: 240px;
+    overflow-y: auto;
+    color: var(--text);
+    direction: ltr;
+    text-align: left;
+    line-height: 1.6;
+  }
+  .clipboard-display.empty { color: var(--text-dim); font-style: italic; }
+
+  .clipboard-input-row { display: flex; gap: 8px; align-items: stretch; }
+  .clipboard-input-row textarea {
+    flex: 1;
+    min-height: 48px;
+    max-height: 160px;
+    padding: 10px 12px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 13px;
+    outline: none;
+    resize: vertical;
+    direction: ltr;
+    text-align: left;
+    line-height: 1.5;
+    transition: border-color .15s;
+  }
+  .clipboard-input-row textarea:focus { border-color: var(--accent); }
+  .clipboard-input-row button {
+    padding: 0 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    transition: background .15s, transform .1s;
+    white-space: nowrap;
+  }
+  .clipboard-input-row button:hover { background: var(--accent-hi); }
+  .clipboard-input-row button:active { transform: scale(.97); }
+  .clipboard-input-row button:disabled { opacity: .5; cursor: not-allowed; }
+
+  .files-section { margin-top: 16px; }
+  .files-header { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 12px; gap: 12px; }
+  .files-header .count { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .files-header button {
+    background: var(--bg-elev); border: 1px solid var(--border); color: var(--accent-hi);
+    font-size: 13px; cursor: pointer; padding: 8px 14px; border-radius: 10px;
+    font-family: inherit; font-weight: 600; transition: all .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .files-header button:hover { background: var(--bg-soft); border-color: var(--accent); }
+  .files-header button:active { transform: scale(.96); }
+  .file-list { display: grid; gap: 10px; grid-template-columns: 1fr; }
+  @media (min-width: 700px)  { .file-list { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .file-list { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1400px) { .file-list { grid-template-columns: repeat(4, 1fr); } }
+  .file { padding: 12px 14px; display: flex; align-items: center; gap: 10px; transition: border-color .15s; }
+  .file:hover { border-color: var(--border-hi); }
+  .file .info { flex: 1; min-width: 0; }
+  .file .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; direction: ltr; text-align: right; color: var(--text); font-weight: 500; }
+  [dir="ltr"] .file .name { text-align: left; }
+
+  .file .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+    direction: ltr;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+    direction: ltr;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .chip .ic { font-size: 10px; opacity: .75; }
+
+  .file a, .file button {
+    text-decoration: none; padding: 8px 10px; border-radius: 8px; font-size: 13px;
+    border: none; cursor: pointer; background: var(--accent); color: #fff;
+    font-weight: 600; font-family: inherit; white-space: nowrap;
+    transition: background .15s, transform .1s; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; min-width: 38px;
+  }
+  .file a:hover { background: var(--accent-hi); }
+  .file a:active, .file button:active { transform: scale(.93); }
+  .file button.del { background: var(--danger); color: var(--danger-text); }
+  .file button.del:hover { background: var(--danger-hi); }
+  .empty { padding: 40px 20px; text-align: center; color: var(--text-dim); font-size: 14px; background: var(--bg-elev); border-radius: 16px; border: 1px dashed var(--border); grid-column: 1 / -1; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    padding: 24px 20px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    text-align: center;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+  .footer-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .footer-line .heart { color: #ef4444; }
+  .footer-sep { color: var(--border-hi); }
+  .footer-dev {
+    color: var(--accent-hi);
+    text-decoration: none;
+    font-weight: 600;
+    direction: ltr;
+    padding: 3px 8px;
+    border-radius: 6px;
+    transition: background .15s, color .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .footer-dev:hover { background: var(--bg-soft); color: var(--accent-hi); }
+  .footer-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    opacity: .75;
+    margin-top: 4px;
+  }
+
+  .toast {
+    position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%;
+    transform: translateX(-50%) translateY(200%);
+    background: var(--bg-elev); color: var(--text);
+    padding: 12px 22px; border-radius: 12px; font-size: 14px;
+    box-shadow: var(--shadow); transition: transform .3s;
+    z-index: 100; border: 1px solid var(--border); max-width: 90vw; font-weight: 500;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { border-color: var(--danger); background: var(--danger); color: var(--danger-text); }
+
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,.92);
+    display: none; align-items: center; justify-content: center;
+    z-index: 200; padding: 20px;
+    backdrop-filter: blur(10px);
+  }
+  [data-theme="light"] .login-overlay { background: rgba(241,245,249,.92); }
+  .login-overlay.show { display: flex; }
+  .login-card {
+    background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px 28px; max-width: 400px; width: 100%;
+    text-align: center; box-shadow: var(--shadow);
+  }
+  .login-card .lock-icon { font-size: 56px; margin-bottom: 12px; line-height: 1; }
+  .login-card h2 { margin: 0 0 10px; font-size: 22px; color: var(--text); }
+  .login-hint { color: var(--text-muted); font-size: 14px; margin: 0 0 20px; line-height: 1.7; }
+  .pin-input {
+    width: 100%; padding: 16px; font-size: 28px; text-align: center;
+    letter-spacing: 8px;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    background: var(--bg); color: var(--text);
+    border: 2px solid var(--border); border-radius: 12px;
+    outline: none; transition: border-color .15s; direction: ltr;
+  }
+  .pin-input:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%; padding: 14px; margin-top: 14px;
+    background: var(--accent); color: white; border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: background .15s, transform .1s;
+  }
+  .login-btn:hover { background: var(--accent-hi); }
+  .login-btn:active { transform: scale(.98); }
+  .login-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .login-error { color: #ef4444; font-size: 13px; margin-top: 12px; min-height: 18px; }
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="lock-icon">🔒</div>
+    <h2 id="tLoginTitle">ورود</h2>
+    <p class="login-hint" id="tLoginHint">PIN ۶ رقمی که در پنجره برنامه نمایش داده شده را وارد کن</p>
+    <input type="tel" id="pinInput" class="pin-input" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="------">
+    <button class="login-btn" id="loginBtn">ورود</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <h1 id="tTitle">📡 هم‌رسان</h1>
+      <div class="sub" id="tSubtitle">انتقال فایل روی شبکه محلی — بدون اینترنت</div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
+      <button class="icon-btn text" id="langBtn" title="Language">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+    <aside class="side">
+      <div class="card qr-card">
+        <div class="qr-wrap"><img src="/api/qr" alt="QR Code"></div>
+        <div class="hint" id="tScanHint">با دوربین گوشی این کد را اسکن کن<br>یا آدرس زیر را در مرورگر باز کن</div>
+        <div class="url" id="urlBox" title="Click to copy">...</div>
+      </div>
+    </aside>
+
+    <div class="upload-section">
+      <div class="card upload" id="dropzone">
+        <div class="icon">⬆️</div>
+        <div class="label" id="tDropLabel">برای انتخاب فایل <strong>ضربه بزن</strong><br>یا فایل را اینجا رها کن</div>
+        <input type="file" id="fileInput" multiple hidden>
+      </div>
+      <div class="card progress" id="progress">
+        <div class="name" id="progressName"></div>
+        <div class="bar"><div id="progressBar"></div></div>
+      </div>
+    </div>
+
+    <div class="clipboard-section">
+      <div class="card clipboard-card">
+        <div class="clipboard-header">
+          <span class="title"><span>📋</span><span id="tClipTitle">متن و لینک</span></span>
+          <div class="clip-actions">
+            <button id="clipCopyBtn" onclick="copyClipboard()" disabled>
+              <span>📄</span><span id="tClipCopy">کپی</span>
+            </button>
+            <button id="clipClearBtn" onclick="clearClipboard()" disabled>
+              <span>🗑</span><span id="tClipClear">پاک</span>
+            </button>
+          </div>
+        </div>
+        <div class="clipboard-display empty" id="clipDisplay">هنوز متنی به اشتراک گذاشته نشده</div>
+        <div class="clipboard-input-row">
+          <textarea id="clipInput" placeholder="اینجا بنویس یا پیست کن..."></textarea>
+          <button id="clipSend" onclick="sendClipboard()" disabled>ارسال</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="files-section">
+      <div class="files-header">
+        <span class="count" id="tFilesCount">فایل‌ها</span>
+        <button onclick="loadFiles()"><span>↻</span><span id="tRefresh">تازه‌سازی</span></button>
+      </div>
+      <div class="file-list" id="files">
+        <div class="empty" id="tLoading">در حال بارگذاری...</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-line">
+    <span id="tFooterMade">ساخته شده با</span>
+    <span class="heart">❤️</span>
+    <span id="tFooterBy">توسط</span>
+    <a class="footer-dev" href="https://t.me/iwSajaD" target="_blank" rel="noopener noreferrer">
+      <span>💬</span><span>@iwSajaD</span>
+    </a>
+  </div>
+  <div class="footer-sub" id="tFooterSub">انتقاد و پیشنهاد؟ خوشحال می‌شم بشنوم</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const T = {
+  fa: {
+    title: "📡 هم‌رسان",
+    subtitle: "انتقال فایل روی شبکه محلی — بدون اینترنت",
+    scanHint: "با دوربین گوشی این کد را اسکن کن<br>یا آدرس زیر را در مرورگر باز کن",
+    dropLabel: "برای انتخاب فایل <strong>ضربه بزن</strong><br>یا فایل را اینجا رها کن",
+    filesCount: (n) => n ? `${n} فایل` : 'فایل‌ها',
+    refresh: "تازه‌سازی",
+    loading: "در حال بارگذاری...",
+    noFiles: "هنوز فایلی نیست",
+    loadError: "خطا در بارگذاری",
+    copied: "آدرس کپی شد",
+    copyFailed: "کپی نشد",
+    deleteConfirm: "این فایل حذف شود؟",
+    deleted: "حذف شد",
+    deleteError: "خطا در حذف",
+    uploadDone: "آپلود کامل شد",
+    uploadError: "خطا در آپلود",
+    networkError: "خطای شبکه",
+    download: "دانلود",
+    delete: "حذف",
+    loginTitle: "ورود",
+    loginHint: "PIN ۶ رقمی که در پنجره برنامه نمایش داده شده را وارد کن",
+    loginBtn: "ورود",
+    pinWrong: "PIN اشتباه است",
+    pinEmpty: "PIN را وارد کن",
+    clipTitle: "متن و لینک",
+    clipCopy: "کپی",
+    clipClear: "پاک",
+    clipSend: "ارسال",
+    clipPlaceholder: "اینجا بنویس یا پیست کن...",
+    clipEmpty: "هنوز متنی به اشتراک گذاشته نشده",
+    clipSent: "ارسال شد",
+    clipCopied: "متن کپی شد",
+    clipCleared: "پاک شد",
+    clipConfirmClear: "متن به اشتراک گذاشته شده پاک شود؟",
+    footerMade: "ساخته شده با",
+    footerBy: "توسط",
+    footerSub: "انتقاد و پیشنهاد؟ خوشحال می‌شم بشنوم",
+  },
+  en: {
+    title: "📡 Hamresan",
+    subtitle: "Local network file transfer — no internet",
+    scanHint: "Scan this QR with your phone camera<br>or open the URL below in a browser",
+    dropLabel: "Tap to select files<br>or drop them here",
+    filesCount: (n) => n ? `${n} file${n>1?'s':''}` : 'Files',
+    refresh: "Refresh",
+    loading: "Loading...",
+    noFiles: "No files yet",
+    loadError: "Failed to load",
+    copied: "URL copied",
+    copyFailed: "Copy failed",
+    deleteConfirm: "Delete this file?",
+    deleted: "Deleted",
+    deleteError: "Delete failed",
+    uploadDone: "Upload complete",
+    uploadError: "Upload failed",
+    networkError: "Network error",
+    download: "Download",
+    delete: "Delete",
+    loginTitle: "Sign in",
+    loginHint: "Enter the 6-digit PIN shown in the app window",
+    loginBtn: "Sign in",
+    pinWrong: "Wrong PIN",
+    pinEmpty: "Enter the PIN",
+    clipTitle: "Text & Links",
+    clipCopy: "Copy",
+    clipClear: "Clear",
+    clipSend: "Send",
+    clipPlaceholder: "Type or paste here...",
+    clipEmpty: "No text shared yet",
+    clipSent: "Sent",
+    clipCopied: "Text copied",
+    clipCleared: "Cleared",
+    clipConfirmClear: "Clear the shared text?",
+    footerMade: "Made with",
+    footerBy: "by",
+    footerSub: "Feedback and suggestions? I'd love to hear from you",
+  }
+};
+
+let lang = localStorage.getItem('hr-lang') || 'fa';
+let theme = localStorage.getItem('hr-theme') || 'dark';
+let lastCount = -1;
+let authChecked = false;
+let lastClipText = '';
+
+const dropzone   = document.getElementById('dropzone');
+const fileInput  = document.getElementById('fileInput');
+const filesEl    = document.getElementById('files');
+const filesCount = document.getElementById('tFilesCount');
+const progressEl = document.getElementById('progress');
+const progressBar = document.getElementById('progressBar');
+const progressName = document.getElementById('progressName');
+const toastEl    = document.getElementById('toast');
+const urlBox     = document.getElementById('urlBox');
+const themeBtn   = document.getElementById('themeBtn');
+const langBtn    = document.getElementById('langBtn');
+const tTitle     = document.getElementById('tTitle');
+const tSubtitle  = document.getElementById('tSubtitle');
+const tScanHint  = document.getElementById('tScanHint');
+const tDropLabel = document.getElementById('tDropLabel');
+const tRefresh   = document.getElementById('tRefresh');
+const tLoading   = document.getElementById('tLoading');
+const loginOverlay = document.getElementById('loginOverlay');
+const loginBtn   = document.getElementById('loginBtn');
+const pinInput   = document.getElementById('pinInput');
+const loginError = document.getElementById('loginError');
+const tLoginTitle = document.getElementById('tLoginTitle');
+const tLoginHint  = document.getElementById('tLoginHint');
+
+const clipInput    = document.getElementById('clipInput');
+const clipSend     = document.getElementById('clipSend');
+const clipDisplay  = document.getElementById('clipDisplay');
+const clipCopyBtn  = document.getElementById('clipCopyBtn');
+const clipClearBtn = document.getElementById('clipClearBtn');
+const tClipTitle   = document.getElementById('tClipTitle');
+const tClipCopy    = document.getElementById('tClipCopy');
+const tClipClear   = document.getElementById('tClipClear');
+
+const tFooterMade = document.getElementById('tFooterMade');
+const tFooterBy   = document.getElementById('tFooterBy');
+const tFooterSub  = document.getElementById('tFooterSub');
+
+function toast(msg, isError = false) {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toastEl.className = 'toast'; }, 2500);
+}
+
+function fmtSize(n) {
+  const u = ['B','KB','MB','GB','TB'];
+  let i = 0;
+  while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+  return i === 0 ? `${n} ${u[i]}` : `${n.toFixed(2)} ${u[i]}`;
+}
+
+function fmtDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts * 1000);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function fmtTimeOfDay(ts) {
+  if (!ts) return '';
+  const d = new Date(ts * 1000);
+  const pad = n => String(n).padStart(2, '0');
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f172a' : '#38bdf8');
+}
+
+function applyLang() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+  tTitle.textContent = t.title;
+  tSubtitle.textContent = t.subtitle;
+  tScanHint.innerHTML = t.scanHint;
+  tDropLabel.innerHTML = t.dropLabel;
+  tRefresh.textContent = t.refresh;
+  tLoading.textContent = t.loading;
+  tLoginTitle.textContent = t.loginTitle;
+  tLoginHint.textContent = t.loginHint;
+  loginBtn.textContent = t.loginBtn;
+  filesCount.textContent = t.filesCount(lastCount >= 0 ? lastCount : 0);
+  langBtn.textContent = lang === 'fa' ? 'EN' : 'فا';
+  tClipTitle.textContent = t.clipTitle;
+  tClipCopy.textContent = t.clipCopy;
+  tClipClear.textContent = t.clipClear;
+  clipSend.textContent = t.clipSend;
+  clipInput.placeholder = t.clipPlaceholder;
+  tFooterMade.textContent = t.footerMade;
+  tFooterBy.textContent = t.footerBy;
+  tFooterSub.textContent = t.footerSub;
+  renderClipboard(lastClipText);
+  if (authChecked) loadFiles();
+}
+
+themeBtn.addEventListener('click', () => {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('hr-theme', theme);
+  applyTheme();
+});
+
+langBtn.addEventListener('click', () => {
+  lang = lang === 'fa' ? 'en' : 'fa';
+  localStorage.setItem('hr-lang', lang);
+  applyLang();
+});
+
+async function loadInfo() {
+  try {
+    const r = await fetch('/api/info');
+    if (!r.ok) return;
+    const data = await r.json();
+    urlBox.textContent = data.url || window.location.origin;
+  } catch {
+    urlBox.textContent = window.location.origin;
+  }
+}
+
+urlBox.addEventListener('click', async () => {
+  const t = T[lang];
+  try {
+    await navigator.clipboard.writeText(urlBox.textContent);
+    toast(t.copied);
+  } catch {
+    toast(t.copyFailed, true);
+  }
+});
+
+function renderClipboard(text) {
+  lastClipText = text;
+  if (text) {
+    clipDisplay.classList.remove('empty');
+    clipDisplay.textContent = text;
+    clipCopyBtn.disabled = false;
+    clipClearBtn.disabled = false;
+  } else {
+    clipDisplay.classList.add('empty');
+    clipDisplay.textContent = T[lang].clipEmpty;
+    clipCopyBtn.disabled = true;
+    clipClearBtn.disabled = true;
+  }
+}
+
+async function loadClipboard() {
+  try {
+    const r = await fetch('/api/clipboard', { credentials: 'same-origin' });
+    if (r.status === 401) return;
+    const data = await r.json();
+    renderClipboard(data.text || '');
+  } catch {}
+}
+
+async function sendClipboard() {
+  const text = clipInput.value;
+  if (!text.trim()) return;
+  clipSend.disabled = true;
+  try {
+    const r = await fetch('/api/clipboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+      credentials: 'same-origin',
+    });
+    if (r.ok) {
+      clipInput.value = '';
+      toast(T[lang].clipSent);
+      await loadClipboard();
+    } else {
+      toast(T[lang].networkError, true);
+    }
+  } catch {
+    toast(T[lang].networkError, true);
+  }
+  clipSend.disabled = clipInput.value.trim() === '';
+}
+window.sendClipboard = sendClipboard;
+
+async function clearClipboard() {
+  if (!confirm(T[lang].clipConfirmClear)) return;
+  try {
+    const r = await fetch('/api/clipboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: '' }),
+      credentials: 'same-origin',
+    });
+    if (r.ok) {
+      toast(T[lang].clipCleared);
+      await loadClipboard();
+    }
+  } catch {}
+}
+window.clearClipboard = clearClipboard;
+
+async function copyClipboard() {
+  if (!lastClipText) return;
+  try {
+    await navigator.clipboard.writeText(lastClipText);
+    toast(T[lang].clipCopied);
+  } catch {
+    toast(T[lang].copyFailed, true);
+  }
+}
+window.copyClipboard = copyClipboard;
+
+clipInput.addEventListener('input', () => {
+  clipSend.disabled = clipInput.value.trim() === '';
+});
+
+async function loadFiles() {
+  const t = T[lang];
+  try {
+    const r = await fetch('/api/files', { credentials: 'same-origin' });
+    if (r.status === 401) { showLogin(); return; }
+    const data = await r.json();
+    renderFiles(data.files || []);
+  } catch {
+    filesEl.innerHTML = `<div class="empty">${t.loadError}</div>`;
+  }
+}
+
+function renderFiles(files) {
+  const t = T[lang];
+  lastCount = files.length;
+  filesCount.textContent = t.filesCount(files.length);
+  if (!files.length) {
+    filesEl.innerHTML = `<div class="empty">${t.noFiles}</div>`;
+    return;
+  }
+  let html = '';
+  for (const f of files) {
+    const enc = encodeURIComponent(f.name);
+    html += `
+      <div class="card file">
+        <div class="info">
+          <div class="name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</div>
+          <div class="meta">
+            <span class="chip"><span class="ic">📦</span>${fmtSize(f.size)}</span>
+            <span class="chip"><span class="ic">📅</span>${fmtDate(f.modified)}</span>
+            <span class="chip"><span class="ic">🕐</span>${fmtTimeOfDay(f.modified)}</span>
+          </div>
+        </div>
+        <a href="/download/${enc}" download title="${t.download}">⬇</a>
+        <button class="del" onclick="delFile('${enc}')" title="${t.delete}">🗑</button>
+      </div>`;
+  }
+  filesEl.innerHTML = html;
+}
+
+async function delFile(encodedName) {
+  const t = T[lang];
+  if (!confirm(t.deleteConfirm)) return;
+  try {
+    const r = await fetch('/api/files/' + encodedName, {
+      method: 'DELETE',
+      credentials: 'same-origin',
+    });
+    if (r.ok) { toast(t.deleted); loadFiles(); }
+    else toast(t.deleteError, true);
+  } catch { toast(t.deleteError, true); }
+}
+window.delFile = delFile;
+
+async function uploadFiles(files) {
+  if (!files.length) return;
+  const t = T[lang];
+  const total = files.length;
+  for (let i = 0; i < files.length; i++) {
+    await uploadOne(files[i], i + 1, total);
+  }
+  progressEl.classList.remove('active');
+  loadFiles();
+  toast(t.uploadDone);
+}
+
+function uploadOne(file, idx, total) {
+  const t = T[lang];
+  return new Promise((resolve) => {
+    const fd = new FormData();
+    fd.append('file', file, file.name);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/upload');
+    xhr.withCredentials = true;
+    progressEl.classList.add('active');
+    progressName.textContent = `(${idx}/${total}) ${file.name}`;
+    progressBar.style.width = '0%';
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) progressBar.style.width = (e.loaded / e.total * 100) + '%';
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) resolve();
+      else { toast(`${t.uploadError}: ${file.name}`, true); resolve(); }
+    };
+    xhr.onerror = () => { toast(t.networkError, true); resolve(); };
+    xhr.send(fd);
+  });
+}
+
+dropzone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  uploadFiles(fileInput.files);
+  fileInput.value = '';
+});
+['dragenter','dragover'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag'); }));
+dropzone.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+});
+
+function showLogin() {
+  loginOverlay.classList.add('show');
+  pinInput.value = '';
+  loginError.textContent = '';
+  setTimeout(() => pinInput.focus(), 100);
+}
+
+function hideLogin() {
+  loginOverlay.classList.remove('show');
+}
+
+async function afterLogin() {
+  authChecked = true;
+  await loadInfo();
+  await Promise.all([loadFiles(), loadClipboard()]);
+  if (!afterLogin._interval) {
+    afterLogin._interval = setInterval(() => {
+      if (!authChecked) return;
+      loadFiles();
+      loadClipboard();
+    }, 3000);
+  }
+}
+
+async function doLogin() {
+  const t = T[lang];
+  const pin = pinInput.value.replace(/\D/g, '');
+  loginError.textContent = '';
+
+  if (!pin) { loginError.textContent = t.pinEmpty; return; }
+  if (pin.length < 6) { loginError.textContent = t.pinWrong; return; }
+
+  loginBtn.disabled = true;
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin }),
+      credentials: 'same-origin',
+    });
+
+    if (!r.ok) {
+      loginError.textContent = t.pinWrong;
+      pinInput.value = '';
+      pinInput.focus();
+      return;
+    }
+
+    await new Promise(res => setTimeout(res, 150));
+
+    const check = await fetch('/api/auth-status', { credentials: 'same-origin' });
+    const data = await check.json();
+
+    if (data.authenticated) {
+      hideLogin();
+      await afterLogin();
+    } else {
+      loginError.textContent = t.pinWrong;
+      pinInput.value = '';
+      pinInput.focus();
+    }
+  } catch {
+    loginError.textContent = t.networkError;
+  } finally {
+    loginBtn.disabled = false;
+  }
+}
+
+loginBtn.addEventListener('click', doLogin);
+pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+pinInput.addEventListener('input', () => {
+  pinInput.value = pinInput.value.replace(/\D/g, '').slice(0, 6);
+});
+
+async function init() {
+  applyTheme();
+  applyLang();
+  try {
+    const r = await fetch('/api/auth-status', { credentials: 'same-origin' });
+    const data = await r.json();
+    if (data.needs_pin && !data.authenticated) {
+      showLogin();
+    } else {
+      await afterLogin();
+    }
+  } catch {
+    showLogin();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
