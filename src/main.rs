@@ -55,7 +55,6 @@ struct Cli {
     #[arg(long)]
     no_pin: bool,
 
-    /// Start minimized to system tray
     #[arg(long)]
     minimized: bool,
 }
@@ -105,8 +104,7 @@ fn main() -> Result<()> {
 
     if let Some(pin) = &pin_opt {
         println!("  🔐 PIN:  {}", format_pin(pin));
-        println!("     Enter this on any phone/tablet that connects.");
-        println!("     Devices on this PC (localhost) skip the PIN.");
+        println!("     (also shown inside the app window)");
         println!();
     } else {
         println!("  ⚠️  PIN protection is DISABLED");
@@ -160,11 +158,8 @@ fn main() -> Result<()> {
         }
     }
 
-    let title = match &pin_opt {
-        Some(p) => format!("Hamresan  —  PIN: {}", format_pin(p)),
-        None => "Hamresan".to_string(),
-    };
-    run_gui(&local_url, &title, cli.minimized)
+    // ✅ عنوان پنجره فقط "Hamresan" — بدون PIN
+    run_gui(&local_url, "Hamresan", cli.minimized)
 }
 
 fn run_gui(local_url: &str, title: &str, start_minimized: bool) -> Result<()> {
@@ -200,7 +195,6 @@ fn run_gui(local_url: &str, title: &str, start_minimized: bool) -> Result<()> {
         .with_devtools(false)
         .build(&window)?;
 
-    // ---------- Tray menu ----------
     let menu = Menu::new();
     let open_item     = MenuItem::new("Open Hamresan", true, None);
     let feedback_item = MenuItem::new("💬 انتقاد و پیشنهاد", true, None);

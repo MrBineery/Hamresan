@@ -135,8 +135,18 @@ async fn index() -> Html<&'static str> {
     Html(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/web/index.html")))
 }
 
-async fn info(State(state): State<AppState>) -> impl IntoResponse {
-    Json(json!({ "url": state.url }))
+async fn info(State(state): State<AppState>, headers: HeaderMap) -> impl IntoResponse {
+    // ✅ PIN فقط برای localhost (پنجره ویندوز) فرستاده می‌شه
+    let pin = if is_localhost(&headers) {
+        state.pin_display.clone()
+    } else {
+        String::new()
+    };
+
+    Json(json!({
+        "url": state.url,
+        "pin": pin,
+    }))
 }
 
 async fn qr_svg(State(state): State<AppState>) -> Response {

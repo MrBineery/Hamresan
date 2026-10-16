@@ -94,6 +94,46 @@
   }
   .url:hover { border-color: var(--accent); background: var(--bg-soft); }
 
+  /* PIN box – only visible when opened from the desktop window */
+  .pin-box {
+    display: none;
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--bg-soft);
+    border: 1.5px dashed var(--accent);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
+  .pin-box.show { display: block; }
+  .pin-box .pin-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-weight: 600;
+  }
+  .pin-box .pin-code {
+    font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent-hi);
+    letter-spacing: 4px;
+    direction: ltr;
+    user-select: all;
+    cursor: pointer;
+    transition: color .15s;
+    line-height: 1.2;
+  }
+  .pin-box .pin-code:hover { color: var(--accent); }
+  .pin-box .pin-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
   .upload {
     border: 2px dashed var(--border); padding: 32px 24px; text-align: center;
     cursor: pointer; transition: all .2s; min-height: 160px;
@@ -208,26 +248,12 @@
   .file .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; direction: ltr; text-align: right; color: var(--text); font-weight: 500; }
   [dir="ltr"] .file .name { text-align: left; }
 
-  .file .meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 6px;
-    direction: ltr;
-  }
+  .file .meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; direction: ltr; }
   .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 2px 7px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 11px;
-    color: var(--text-muted);
-    direction: ltr;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.5;
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 7px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; font-size: 11px; color: var(--text-muted);
+    direction: ltr; font-variant-numeric: tabular-nums; line-height: 1.5;
     white-space: nowrap;
   }
   .chip .ic { font-size: 10px; opacity: .75; }
@@ -245,7 +271,6 @@
   .file button.del:hover { background: var(--danger-hi); }
   .empty { padding: 40px 20px; text-align: center; color: var(--text-dim); font-size: 14px; background: var(--bg-elev); border-radius: 16px; border: 1px dashed var(--border); grid-column: 1 / -1; }
 
-  /* ---------- Footer ---------- */
   footer {
     padding: 24px 20px;
     padding-bottom: calc(24px + env(safe-area-inset-bottom));
@@ -254,36 +279,18 @@
     margin-top: 24px;
   }
   .footer-line {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    color: var(--text-dim);
-    font-size: 13px;
-    line-height: 1.8;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px; flex-wrap: wrap; color: var(--text-dim); font-size: 13px; line-height: 1.8;
   }
   .footer-line .heart { color: #ef4444; }
-  .footer-sep { color: var(--border-hi); }
   .footer-dev {
-    color: var(--accent-hi);
-    text-decoration: none;
-    font-weight: 600;
-    direction: ltr;
-    padding: 3px 8px;
-    border-radius: 6px;
+    color: var(--accent-hi); text-decoration: none; font-weight: 600;
+    direction: ltr; padding: 3px 8px; border-radius: 6px;
     transition: background .15s, color .15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    display: inline-flex; align-items: center; gap: 4px;
   }
   .footer-dev:hover { background: var(--bg-soft); color: var(--accent-hi); }
-  .footer-sub {
-    font-size: 11px;
-    color: var(--text-dim);
-    opacity: .75;
-    margin-top: 4px;
-  }
+  .footer-sub { font-size: 11px; color: var(--text-dim); opacity: .75; margin-top: 4px; }
 
   .toast {
     position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%;
@@ -367,6 +374,12 @@
         <div class="qr-wrap"><img src="/api/qr" alt="QR Code"></div>
         <div class="hint" id="tScanHint">با دوربین گوشی این کد را اسکن کن<br>یا آدرس زیر را در مرورگر باز کن</div>
         <div class="url" id="urlBox" title="Click to copy">...</div>
+
+        <div class="pin-box" id="pinBox">
+          <div class="pin-label">🔐 <span id="tPinLabel">کد امنیتی</span></div>
+          <div class="pin-code" id="pinCode" title="Click to copy">------</div>
+          <div class="pin-hint" id="tPinHint">این کد را روی گوشی وارد کن</div>
+        </div>
       </div>
     </aside>
 
@@ -469,6 +482,9 @@ const T = {
     footerMade: "ساخته شده با",
     footerBy: "توسط",
     footerSub: "انتقاد و پیشنهاد؟ خوشحال می‌شم بشنوم",
+    pinLabel: "کد امنیتی",
+    pinHint: "این کد را روی گوشی وارد کن",
+    pinCopied: "کد کپی شد",
   },
   en: {
     title: "📡 Hamresan",
@@ -508,6 +524,9 @@ const T = {
     footerMade: "Made with",
     footerBy: "by",
     footerSub: "Feedback and suggestions? I'd love to hear from you",
+    pinLabel: "Security code",
+    pinHint: "Enter this on your phone",
+    pinCopied: "PIN copied",
   }
 };
 
@@ -516,6 +535,7 @@ let theme = localStorage.getItem('hr-theme') || 'dark';
 let lastCount = -1;
 let authChecked = false;
 let lastClipText = '';
+let currentPin = '';
 
 const dropzone   = document.getElementById('dropzone');
 const fileInput  = document.getElementById('fileInput');
@@ -553,6 +573,11 @@ const tClipClear   = document.getElementById('tClipClear');
 const tFooterMade = document.getElementById('tFooterMade');
 const tFooterBy   = document.getElementById('tFooterBy');
 const tFooterSub  = document.getElementById('tFooterSub');
+
+const pinBox   = document.getElementById('pinBox');
+const pinCode  = document.getElementById('pinCode');
+const tPinLabel = document.getElementById('tPinLabel');
+const tPinHint  = document.getElementById('tPinHint');
 
 function toast(msg, isError = false) {
   toastEl.textContent = msg;
@@ -616,6 +641,8 @@ function applyLang() {
   tFooterMade.textContent = t.footerMade;
   tFooterBy.textContent = t.footerBy;
   tFooterSub.textContent = t.footerSub;
+  tPinLabel.textContent = t.pinLabel;
+  tPinHint.textContent = t.pinHint;
   renderClipboard(lastClipText);
   if (authChecked) loadFiles();
 }
@@ -638,6 +665,14 @@ async function loadInfo() {
     if (!r.ok) return;
     const data = await r.json();
     urlBox.textContent = data.url || window.location.origin;
+
+    if (data.pin && data.pin.length > 0) {
+      currentPin = data.pin;
+      pinCode.textContent = data.pin;
+      pinBox.classList.add('show');
+    } else {
+      pinBox.classList.remove('show');
+    }
   } catch {
     urlBox.textContent = window.location.origin;
   }
@@ -651,6 +686,14 @@ urlBox.addEventListener('click', async () => {
   } catch {
     toast(t.copyFailed, true);
   }
+});
+
+pinCode.addEventListener('click', async () => {
+  if (!currentPin) return;
+  try {
+    await navigator.clipboard.writeText(currentPin.replace(/\s/g, ''));
+    toast(T[lang].pinCopied);
+  } catch {}
 });
 
 function renderClipboard(text) {
