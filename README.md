@@ -9,9 +9,10 @@
 <p align="center">
   <img src="screenshots/desktop.png" alt="نسخه دسکتاپ" width="800">
 </p>
-
+<br>
 <p align="center">
   <img src="screenshots/mobile-1.png" alt="نسخه موبایل ۱" width="300">
+  <br>
   <img src="screenshots/mobile-2.png" alt="نسخه موبایل ۲" width="300">
 </p>
 
