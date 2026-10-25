@@ -4,7 +4,7 @@
 
 **Hamresan** lets you share files and text between devices on the same local network (Wi-Fi, hotspot, LAN) using a fast web interface. No cloud, no account, no size limit.
 
-## 📸 اسکرین‌شات‌ها
+## 📸 اسکرین‌شات از محیط نرم افزار
 
 <p align="center">
   <img src="screenshots/desktop.png" alt="نسخه دسکتاپ" width="800">
