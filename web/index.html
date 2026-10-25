@@ -3,971 +3,705 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0ea5e9">
+<meta name="theme-color" content="#0b0f19">
 <title>هم‌رسان · Hamresan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root, [data-theme="dark"] {
-    --bg:#0f172a; --bg-elev:#1e293b; --bg-elev-2:#334155; --bg-soft:#1e3a5f;
-    --border:#334155; --border-hi:#475569;
-    --text:#e2e8f0; --text-muted:#94a3b8; --text-dim:#64748b;
-    --accent:#0ea5e9; --accent-hi:#38bdf8; --accent-2:#6366f1;
-    --danger:#7f1d1d; --danger-hi:#991b1b; --danger-text:#fecaca;
-    --shadow:0 4px 20px rgba(0,0,0,.4);
-    --header-grad:linear-gradient(135deg,#0ea5e9,#6366f1);
+    --bg: #0b0f19;
+    --surface: #111827;
+    --surface-hover: #1e293b;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hi: rgba(255, 255, 255, 0.15);
+    --text: #dfe2f1;
+    --text-muted: #88929b;
+    --primary: #0ea5e9;
+    --primary-hi: #38bdf8;
+    --secondary: #6366f1;
+    --danger: #f43f5e;
+    --danger-bg: rgba(244, 63, 94, 0.1);
+    --gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+    --glow: 0 0 24px -4px rgba(14, 165, 233, 0.25), 0 0 12px -2px rgba(99, 102, 241, 0.2);
+    --shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
   }
   [data-theme="light"] {
-    --bg:#f1f5f9; --bg-elev:#ffffff; --bg-elev-2:#f8fafc; --bg-soft:#e0f2fe;
-    --border:#e2e8f0; --border-hi:#cbd5e1;
-    --text:#0f172a; --text-muted:#475569; --text-dim:#64748b;
-    --accent:#0284c7; --accent-hi:#0ea5e9; --accent-2:#6366f1;
-    --danger:#fee2e2; --danger-hi:#fecaca; --danger-text:#991b1b;
-    --shadow:0 4px 20px rgba(15,23,42,.08);
-    --header-grad:linear-gradient(135deg,#38bdf8,#818cf8);
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface-hover: #f1f5f9;
+    --border: #e2e8f0;
+    --border-hi: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --primary: #0284c7;
+    --primary-hi: #0ea5e9;
+    --secondary: #4f46e5;
+    --danger: #e11d48;
+    --danger-bg: rgba(225, 29, 72, 0.1);
+    --gradient: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+    --glow: 0 0 24px -4px rgba(2, 132, 199, 0.15);
+    --shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
   }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Roboto, "Noto Sans", sans-serif;
+    font-family: 'Geist', 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
     margin: 0; background: var(--bg); color: var(--text);
-    min-height: 100vh; transition: background .2s, color .2s; line-height: 1.5;
+    min-height: 100vh; line-height: 1.5; transition: background .2s, color .2s;
     display: flex; flex-direction: column;
   }
+  [dir="rtl"] body { font-family: 'Vazirmatn', 'Geist', Tahoma, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
 
+  /* Header */
   header {
-    background: var(--header-grad);
-    padding: 14px 20px;
-    padding-top: calc(14px + env(safe-area-inset-top));
-    box-shadow: var(--shadow);
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    padding-top: calc(12px + env(safe-area-inset-top));
     position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
-  .brand { flex: 1; min-width: 0; }
-  .brand h1 { margin: 0; font-size: 18px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .brand .sub { font-size: 12px; color: rgba(255,255,255,.85); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .header-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--gradient);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff;
+  }
+  .brand h1 { margin: 0; font-size: 16px; font-weight: 600; }
+  .brand .node-info { font-size: 11px; color: var(--primary-hi); display: flex; align-items: center; gap: 4px; }
+  .node-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; display: inline-block; }
+  .header-actions { display: flex; gap: 8px; }
   .icon-btn {
-    background: rgba(255,255,255,.18); color: #fff; border: none; border-radius: 10px;
-    padding: 0; width: 38px; height: 38px; font-size: 16px; cursor: pointer; font-family: inherit;
-    display: flex; align-items: center; justify-content: center; transition: background .15s, transform .1s;
-    backdrop-filter: blur(6px);
+    background: transparent; border: 1px solid transparent; color: var(--text-muted);
+    width: 36px; height: 36px; border-radius: 10px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
   }
-  .icon-btn:hover { background: rgba(255,255,255,.3); }
-  .icon-btn:active { transform: scale(.94); }
-  .icon-btn.text { width: auto; padding: 0 12px; font-weight: 700; font-size: 13px; letter-spacing: .5px; }
+  .icon-btn:hover { background: var(--surface-hover); color: var(--text); }
+  .icon-btn.text { width: auto; padding: 0 12px; font-size: 12px; font-weight: 700; }
 
-  main { padding: 20px; padding-bottom: 8px; max-width: 1200px; margin: 0 auto; width: 100%; flex: 1; }
-  .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-  @media (min-width: 900px) {
-    main { padding: 28px 28px 8px; }
-    .grid {
-      grid-template-columns: 360px 1fr;
-      grid-template-areas:
-        "qr    upload"
-        "clip  clip"
-        "files files";
-      gap: 20px; align-items: stretch;
-    }
-    .side { grid-area: qr; display: flex; }
-    .side .qr-card { width: 100%; }
-    .upload-section { grid-area: upload; display: flex; flex-direction: column; }
-    .upload-section .upload { flex: 1; }
-    .clipboard-section { grid-area: clip; }
-    .files-section { grid-area: files; margin-top: 0 !important; }
-  }
-  @media (min-width: 1300px) { .grid { grid-template-columns: 400px 1fr; } }
-
-  .card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 16px; transition: background .2s, border-color .2s; }
-
-  .qr-card { padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .qr-wrap { background: #fff; border-radius: 12px; padding: 12px; display: inline-block; line-height: 0; box-shadow: 0 4px 16px rgba(0,0,0,.1); }
-  .qr-wrap img { width: 180px; height: 180px; display: block; }
-  @media (min-width: 900px) { .qr-wrap img { width: 200px; height: 200px; } }
-  @media (min-width: 1300px) { .qr-wrap img { width: 240px; height: 240px; } }
-  .qr-card .hint { font-size: 13px; color: var(--text-muted); margin-top: 14px; line-height: 1.7; max-width: 280px; }
-  .url {
-    font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
-    background: var(--bg); color: var(--accent-hi);
-    padding: 10px 14px; border-radius: 10px; margin-top: 12px; font-size: 13px;
-    direction: ltr; user-select: all; word-break: break-all;
-    border: 1px solid var(--border); cursor: pointer; transition: all .15s;
-    max-width: 100%; font-weight: 600;
-  }
-  .url:hover { border-color: var(--accent); background: var(--bg-soft); }
-
-  /* PIN box – only visible when opened from the desktop window */
-  .pin-box {
-    display: none;
-    margin-top: 14px;
-    padding: 12px 16px;
-    background: var(--bg-soft);
-    border: 1.5px dashed var(--accent);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 280px;
-    text-align: center;
-  }
-  .pin-box.show { display: block; }
-  .pin-box .pin-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-    display: flex; align-items: center; justify-content: center; gap: 5px;
-    font-weight: 600;
-  }
-  .pin-box .pin-code {
-    font-family: ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--accent-hi);
-    letter-spacing: 4px;
-    direction: ltr;
-    user-select: all;
-    cursor: pointer;
-    transition: color .15s;
-    line-height: 1.2;
-  }
-  .pin-box .pin-code:hover { color: var(--accent); }
-  .pin-box .pin-hint {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 6px;
-    line-height: 1.5;
+  /* Main Layout */
+  .layout {
+    display: flex; flex: 1; max-width: 1440px; margin: 0 auto; width: 100%;
+    padding: 24px; gap: 24px;
   }
 
-  .upload {
-    border: 2px dashed var(--border); padding: 32px 24px; text-align: center;
-    cursor: pointer; transition: all .2s; min-height: 160px;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
+  /* Sidebar */
+  .sidebar {
+    width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;
   }
-  .upload:hover, .upload.drag { border-color: var(--accent); background: var(--bg-soft); border-style: solid; }
-  .upload .icon { font-size: 44px; margin-bottom: 10px; line-height: 1; transition: transform .2s; }
-  .upload.drag .icon { transform: scale(1.15); }
-  .upload .label { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
-  .upload .label strong { color: var(--accent-hi); font-weight: 700; }
-  @media (min-width: 900px) {
-    .upload { padding: 40px 32px; min-height: 220px; }
-    .upload .icon { font-size: 56px; }
-    .upload .label { font-size: 15px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px;
+    box-shadow: var(--shadow); transition: border-color .2s;
   }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; font-size: 14px; font-weight: 600;
+  }
+  
+  /* QR Code */
+  .qr-container {
+    background: #fff; border-radius: 12px; padding: 16px;
+    display: flex; align-items: center; justify-content: center;
+    aspect-ratio: 1/1; max-width: 200px; margin: 0 auto 16px;
+  }
+  .qr-container img { width: 100%; height: 100%; object-fit: contain; }
 
-  .progress { display: none; padding: 16px; margin-top: 16px; }
-  .progress.active { display: block; }
-  .progress .name { font-size: 13px; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr; text-align: right; color: var(--text); }
-  [dir="ltr"] .progress .name { text-align: left; }
-  .progress .bar { height: 6px; background: var(--bg-elev-2); border-radius: 3px; overflow: hidden; }
-  .progress .bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); width: 0%; transition: width .15s; }
-
-  .clipboard-card { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .clipboard-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .clipboard-header .title { font-weight: 600; color: var(--text-muted); font-size: 14px; display: flex; align-items: center; gap: 6px; }
-  .clip-actions { display: flex; gap: 6px; }
-  .clip-actions button {
-    background: var(--bg); border: 1px solid var(--border); color: var(--text-muted);
-    font-size: 12px; cursor: pointer; padding: 6px 12px; border-radius: 8px;
-    font-family: inherit; font-weight: 600; transition: all .15s;
-    display: inline-flex; align-items: center; gap: 5px;
+  /* PIN Card */
+  .pin-card {
+    background: linear-gradient(180deg, var(--surface) 0%, rgba(15, 23, 42, 0.4) 100%);
+    border: 1px solid var(--border-hi);
   }
-  .clip-actions button:hover { background: var(--bg-soft); border-color: var(--accent); color: var(--accent-hi); }
-  .clip-actions button:active { transform: scale(.96); }
-  .clip-actions button:disabled { opacity: .4; cursor: not-allowed; }
-
-  .clipboard-display {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
-    font-size: 13px;
-    white-space: pre-wrap;
-    word-break: break-word;
-    min-height: 60px;
-    max-height: 240px;
-    overflow-y: auto;
-    color: var(--text);
-    direction: ltr;
-    text-align: left;
-    line-height: 1.6;
+  .pin-display {
+    background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 16px;
+    text-align: center; margin-bottom: 12px; border: 1px inset rgba(255,255,255,0.05);
   }
-  .clipboard-display.empty { color: var(--text-dim); font-style: italic; }
-
-  .clipboard-input-row { display: flex; gap: 8px; align-items: stretch; }
-  .clipboard-input-row textarea {
-    flex: 1;
-    min-height: 48px;
-    max-height: 160px;
-    padding: 10px 12px;
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
-    font-size: 13px;
-    outline: none;
-    resize: vertical;
-    direction: ltr;
-    text-align: left;
-    line-height: 1.5;
-    transition: border-color .15s;
+  .pin-digits {
+    font-size: 36px; font-weight: 700; letter-spacing: 6px;
+    color: var(--primary-hi); font-family: 'JetBrains Mono', monospace;
+    direction: ltr; display: inline-block;
   }
-  .clipboard-input-row textarea:focus { border-color: var(--accent); }
-  .clipboard-input-row button {
-    padding: 0 20px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
+  .pin-hint { font-size: 12px; color: var(--text-muted); text-align: center; }
+  .pin-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-outline {
+    flex: 1; background: var(--surface-hover); border: 1px solid var(--border);
+    color: var(--text); padding: 10px; border-radius: 10px;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
     font-family: inherit;
-    font-size: 14px;
-    transition: background .15s, transform .1s;
-    white-space: nowrap;
   }
-  .clipboard-input-row button:hover { background: var(--accent-hi); }
-  .clipboard-input-row button:active { transform: scale(.97); }
-  .clipboard-input-row button:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-outline:hover { border-color: var(--border-hi); background: rgba(255,255,255,0.05); }
 
-  .files-section { margin-top: 16px; }
-  .files-header { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 12px; gap: 12px; }
-  .files-header .count { font-size: 14px; color: var(--text-muted); font-weight: 600; }
-  .files-header button {
-    background: var(--bg-elev); border: 1px solid var(--border); color: var(--accent-hi);
-    font-size: 13px; cursor: pointer; padding: 8px 14px; border-radius: 10px;
-    font-family: inherit; font-weight: 600; transition: all .15s;
-    display: flex; align-items: center; gap: 6px;
+  /* Main Content */
+  .main-content {
+    flex: 1; display: flex; flex-direction: column; gap: 24px; min-width: 0;
   }
-  .files-header button:hover { background: var(--bg-soft); border-color: var(--accent); }
-  .files-header button:active { transform: scale(.96); }
-  .file-list { display: grid; gap: 10px; grid-template-columns: 1fr; }
-  @media (min-width: 700px)  { .file-list { grid-template-columns: repeat(2, 1fr); } }
-  @media (min-width: 1000px) { .file-list { grid-template-columns: repeat(3, 1fr); } }
-  @media (min-width: 1400px) { .file-list { grid-template-columns: repeat(4, 1fr); } }
-  .file { padding: 12px 14px; display: flex; align-items: center; gap: 10px; transition: border-color .15s; }
-  .file:hover { border-color: var(--border-hi); }
-  .file .info { flex: 1; min-width: 0; }
-  .file .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; direction: ltr; text-align: right; color: var(--text); font-weight: 500; }
-  [dir="ltr"] .file .name { text-align: left; }
 
-  .file .meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; direction: ltr; }
-  .chip {
-    display: inline-flex; align-items: center; gap: 3px;
-    padding: 2px 7px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 6px; font-size: 11px; color: var(--text-muted);
-    direction: ltr; font-variant-numeric: tabular-nums; line-height: 1.5;
-    white-space: nowrap;
+  /* Dropzone */
+  .dropzone {
+    border: 2px dashed var(--border); border-radius: 20px;
+    padding: 40px 20px; text-align: center;
+    cursor: pointer; transition: all .2s;
+    background: rgba(17, 24, 39, 0.4);
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    position: relative; overflow: hidden;
   }
-  .chip .ic { font-size: 10px; opacity: .75; }
+  .dropzone:hover, .dropzone.drag { 
+    border-color: var(--primary); background: rgba(14, 165, 233, 0.05);
+    box-shadow: var(--glow);
+  }
+  .dropzone-icon {
+    width: 64px; height: 64px; border-radius: 16px;
+    background: var(--gradient); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; box-shadow: var(--glow);
+  }
+  .dropzone h2 { margin: 0; font-size: 20px; font-weight: 600; }
+  .dropzone p { margin: 0; color: var(--text-muted); font-size: 13px; }
+  
+  .btn-primary {
+    background: var(--gradient); color: #fff; border: none;
+    padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .2s; font-family: inherit;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary:hover { filter: brightness(1.1); box-shadow: var(--glow); }
+  .btn-primary:active { transform: scale(.98); }
 
-  .file a, .file button {
-    text-decoration: none; padding: 8px 10px; border-radius: 8px; font-size: 13px;
-    border: none; cursor: pointer; background: var(--accent); color: #fff;
-    font-weight: 600; font-family: inherit; white-space: nowrap;
-    transition: background .15s, transform .1s; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; min-width: 38px;
+  /* Clipboard */
+  .clipboard-box textarea {
+    width: 100%; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px; color: var(--text);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    resize: vertical; min-height: 80px; margin-bottom: 12px;
+    transition: border-color .2s; direction: ltr;
   }
-  .file a:hover { background: var(--accent-hi); }
-  .file a:active, .file button:active { transform: scale(.93); }
-  .file button.del { background: var(--danger); color: var(--danger-text); }
-  .file button.del:hover { background: var(--danger-hi); }
-  .empty { padding: 40px 20px; text-align: center; color: var(--text-dim); font-size: 14px; background: var(--bg-elev); border-radius: 16px; border: 1px dashed var(--border); grid-column: 1 / -1; }
+  .clipboard-box textarea:focus { outline: none; border-color: var(--primary); }
+  .clipboard-actions { display: flex; justify-content: flex-end; gap: 8px; }
 
-  footer {
-    padding: 24px 20px;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
-    text-align: center;
-    border-top: 1px solid var(--border);
-    margin-top: 24px;
+  /* File List */
+  .file-list { display: flex; flex-direction: column; gap: 8px; }
+  .file-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px;
+    transition: all .2s;
   }
-  .footer-line {
-    display: inline-flex; align-items: center; justify-content: center;
-    gap: 6px; flex-wrap: wrap; color: var(--text-dim); font-size: 13px; line-height: 1.8;
+  .file-item:hover { border-color: var(--border-hi); background: var(--surface-hover); }
+  .file-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--surface-hover); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--primary-hi); flex-shrink: 0;
   }
-  .footer-line .heart { color: #ef4444; }
-  .footer-dev {
-    color: var(--accent-hi); text-decoration: none; font-weight: 600;
-    direction: ltr; padding: 3px 8px; border-radius: 6px;
-    transition: background .15s, color .15s;
-    display: inline-flex; align-items: center; gap: 4px;
+  .file-info { flex: 1; min-width: 0; }
+  .file-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-meta { display: flex; gap: 8px; font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+  .file-actions { display: flex; gap: 8px; }
+  .file-actions button, .file-actions a {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-hover); border: 1px solid var(--border);
+    color: var(--text); cursor: pointer; transition: all .2s;
+    text-decoration: none;
   }
-  .footer-dev:hover { background: var(--bg-soft); color: var(--accent-hi); }
-  .footer-sub { font-size: 11px; color: var(--text-dim); opacity: .75; margin-top: 4px; }
+  .file-actions button:hover, .file-actions a:hover { background: var(--border-hi); }
+  .file-actions .del:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
 
-  .toast {
-    position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%;
-    transform: translateX(-50%) translateY(200%);
-    background: var(--bg-elev); color: var(--text);
-    padding: 12px 22px; border-radius: 12px; font-size: 14px;
-    box-shadow: var(--shadow); transition: transform .3s;
-    z-index: 100; border: 1px solid var(--border); max-width: 90vw; font-weight: 500;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.error { border-color: var(--danger); background: var(--danger); color: var(--danger-text); }
+  /* Progress */
+  .progress-card { padding: 16px; display: none; }
+  .progress-card.active { display: block; }
+  .progress-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .progress-bar { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gradient); width: 0%; transition: width .2s; }
 
+  /* Mobile Nav */
+  .mobile-nav {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border); padding: 8px 16px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    justify-content: space-around; z-index: 50;
+  }
+  .mobile-nav a {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: var(--text-muted); text-decoration: none; font-size: 10px;
+  }
+  .mobile-nav a.active { color: var(--primary); }
+
+  /* Login Overlay */
   .login-overlay {
-    position: fixed; inset: 0;
-    background: rgba(15,23,42,.92);
-    display: none; align-items: center; justify-content: center;
-    z-index: 200; padding: 20px;
-    backdrop-filter: blur(10px);
+    position: fixed; inset: 0; background: rgba(11, 15, 25, 0.95);
+    backdrop-filter: blur(10px); z-index: 999;
+    display: none; align-items: center; justify-content: center; padding: 20px;
   }
-  [data-theme="light"] .login-overlay { background: rgba(241,245,249,.92); }
   .login-overlay.show { display: flex; }
   .login-card {
-    background: var(--bg-elev); border: 1px solid var(--border);
-    border-radius: 20px; padding: 32px 28px; max-width: 400px; width: 100%;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 400px;
     text-align: center; box-shadow: var(--shadow);
   }
-  .login-card .lock-icon { font-size: 56px; margin-bottom: 12px; line-height: 1; }
-  .login-card h2 { margin: 0 0 10px; font-size: 22px; color: var(--text); }
-  .login-hint { color: var(--text-muted); font-size: 14px; margin: 0 0 20px; line-height: 1.7; }
+  .login-card h2 { margin: 0 0 8px; font-size: 24px; }
+  .login-card p { color: var(--text-muted); margin: 0 0 24px; font-size: 14px; }
   .pin-input {
-    width: 100%; padding: 16px; font-size: 28px; text-align: center;
-    letter-spacing: 8px;
-    font-family: ui-monospace, "SF Mono", Consolas, monospace;
-    background: var(--bg); color: var(--text);
-    border: 2px solid var(--border); border-radius: 12px;
-    outline: none; transition: border-color .15s; direction: ltr;
+    width: 100%; background: rgba(0,0,0,0.3); border: 2px solid var(--border);
+    border-radius: 12px; padding: 16px; font-size: 32px; text-align: center;
+    color: var(--text); font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 8px; outline: none; margin-bottom: 16px; direction: ltr;
   }
-  .pin-input:focus { border-color: var(--accent); }
-  .login-btn {
-    width: 100%; padding: 14px; margin-top: 14px;
-    background: var(--accent); color: white; border: none; border-radius: 12px;
-    font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
-    transition: background .15s, transform .1s;
+  .pin-input:focus { border-color: var(--primary); box-shadow: var(--glow); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 12px 24px; border-radius: 100px; font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow); opacity: 0; transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000; pointer-events: none;
   }
-  .login-btn:hover { background: var(--accent-hi); }
-  .login-btn:active { transform: scale(.98); }
-  .login-btn:disabled { opacity: .6; cursor: not-allowed; }
-  .login-error { color: #ef4444; font-size: 13px; margin-top: 12px; min-height: 18px; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.error { border-color: var(--danger); background: var(--danger-bg); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; padding: 16px; padding-bottom: 80px; }
+    .sidebar { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .mobile-nav { display: flex; }
+    .qr-container { max-width: 140px; }
+    .pin-digits { font-size: 28px; }
+  }
+  @media (max-width: 600px) {
+    .sidebar { grid-template-columns: 1fr; }
+    .dropzone { padding: 24px 16px; }
+    .dropzone h2 { font-size: 16px; }
+    .file-item { padding: 10px 12px; }
+  }
 </style>
 </head>
 <body>
 
+<!-- Login Overlay -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-card">
-    <div class="lock-icon">🔒</div>
-    <h2 id="tLoginTitle">ورود</h2>
-    <p class="login-hint" id="tLoginHint">PIN ۶ رقمی که در پنجره برنامه نمایش داده شده را وارد کن</p>
-    <input type="tel" id="pinInput" class="pin-input" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="------">
-    <button class="login-btn" id="loginBtn">ورود</button>
-    <div class="login-error" id="loginError"></div>
+    <div style="font-size: 40px; margin-bottom: 16px;">🔐</div>
+    <h2>ورود به هم‌رسان</h2>
+    <p>کد ۶ رقمی که در پنجره ویندوز نمایش داده شده را وارد کنید</p>
+    <input type="tel" id="pinInput" class="pin-input" maxlength="6" placeholder="------">
+    <button class="btn-primary" style="width: 100%;" id="loginBtn">ورود</button>
+    <div id="loginError" style="color: var(--danger); font-size: 13px; margin-top: 12px; height: 18px;"></div>
   </div>
 </div>
 
 <header>
-  <div class="header-inner">
+  <div class="header-left">
+    <div class="logo-icon">📡</div>
     <div class="brand">
-      <h1 id="tTitle">📡 هم‌رسان</h1>
-      <div class="sub" id="tSubtitle">انتقال فایل روی شبکه محلی — بدون اینترنت</div>
+      <h1>هم‌رسان <span style="font-size:12px; color:var(--text-muted); font-weight:400;">Hamresan</span></h1>
+      <div class="node-info"><span class="node-dot"></span> P2P Active</div>
     </div>
-    <div class="header-actions">
-      <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
-      <button class="icon-btn text" id="langBtn" title="Language">EN</button>
-    </div>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
+    <button class="icon-btn text" id="langBtn" title="Language">EN</button>
   </div>
 </header>
 
-<main>
-  <div class="grid">
-    <aside class="side">
-      <div class="card qr-card">
-        <div class="qr-wrap"><img src="/api/qr" alt="QR Code"></div>
-        <div class="hint" id="tScanHint">با دوربین گوشی این کد را اسکن کن<br>یا آدرس زیر را در مرورگر باز کن</div>
-        <div class="url" id="urlBox" title="Click to copy">...</div>
-
-        <div class="pin-box" id="pinBox">
-          <div class="pin-label">🔐 <span id="tPinLabel">کد امنیتی</span></div>
-          <div class="pin-code" id="pinCode" title="Click to copy">------</div>
-          <div class="pin-hint" id="tPinHint">این کد را روی گوشی وارد کن</div>
-        </div>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="card">
+      <div class="card-header">
+        <span>📱 اسکن موبایل</span>
       </div>
-    </aside>
-
-    <div class="upload-section">
-      <div class="card upload" id="dropzone">
-        <div class="icon">⬆️</div>
-        <div class="label" id="tDropLabel">برای انتخاب فایل <strong>ضربه بزن</strong><br>یا فایل را اینجا رها کن</div>
-        <input type="file" id="fileInput" multiple hidden>
+      <div class="qr-container">
+        <img src="/api/qr" alt="QR Code">
       </div>
-      <div class="card progress" id="progress">
-        <div class="name" id="progressName"></div>
-        <div class="bar"><div id="progressBar"></div></div>
+      <div class="pin-hint" style="margin-bottom: 12px;">آدرس شبکه: <br><span class="mono" style="color:var(--primary-hi);" id="urlBox">...</span></div>
+    </div>
+
+    <div class="card pin-card" id="pinBox">
+      <div class="card-header">
+        <span>🔑 کد امنیتی</span>
+      </div>
+      <div class="pin-display">
+        <div class="pin-digits" id="pinCode">------</div>
+      </div>
+      <div class="pin-hint">این کد را روی گوشی وارد کنید</div>
+      <div class="pin-actions">
+        <button class="btn-outline" onclick="copyPin()">📋 کپی کد</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Upload Dropzone -->
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-icon">☁️</div>
+      <h2>فایل‌ها را اینجا رها کنید</h2>
+      <p>یا برای انتخاب کلیک کنید. انتقال مستقیم P2P بدون واسطه.</p>
+      <div style="display: flex; gap: 12px; margin-top: 8px;">
+        <button class="btn-primary" id="fileSelectBtn">📄 انتخاب فایل</button>
+        <button class="btn-outline" id="folderSelectBtn" style="background: var(--surface);">📁 انتخاب پوشه</button>
+      </div>
+      <input type="file" id="fileInput" multiple hidden>
+      <input type="file" id="folderInput" webkitdirectory multiple hidden>
+    </div>
+
+    <!-- Progress -->
+    <div class="card progress-card" id="progressCard">
+      <div class="progress-header">
+        <span id="progressName">Uploading...</span>
+        <span id="progressPercent" class="mono">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
 
-    <div class="clipboard-section">
-      <div class="card clipboard-card">
-        <div class="clipboard-header">
-          <span class="title"><span>📋</span><span id="tClipTitle">متن و لینک</span></span>
-          <div class="clip-actions">
-            <button id="clipCopyBtn" onclick="copyClipboard()" disabled>
-              <span>📄</span><span id="tClipCopy">کپی</span>
-            </button>
-            <button id="clipClearBtn" onclick="clearClipboard()" disabled>
-              <span>🗑</span><span id="tClipClear">پاک</span>
-            </button>
-          </div>
-        </div>
-        <div class="clipboard-display empty" id="clipDisplay">هنوز متنی به اشتراک گذاشته نشده</div>
-        <div class="clipboard-input-row">
-          <textarea id="clipInput" placeholder="اینجا بنویس یا پیست کن..."></textarea>
-          <button id="clipSend" onclick="sendClipboard()" disabled>ارسال</button>
-        </div>
+    <!-- Clipboard -->
+    <div class="card clipboard-box">
+      <div class="card-header">
+        <span>📋 کلیپ‌بورد اشتراکی</span>
+      </div>
+      <textarea id="clipInput" placeholder="متن، لینک یا کد را اینجا بنویسید یا پیست کنید..."></textarea>
+      <div class="clipboard-actions">
+        <button class="btn-outline" onclick="clearClipboard()" style="padding: 8px 16px;">🗑 پاک کردن</button>
+        <button class="btn-primary" onclick="sendClipboard()" style="padding: 8px 16px;">🚀 ارسال به دستگاه‌ها</button>
       </div>
     </div>
 
-    <div class="files-section">
-      <div class="files-header">
-        <span class="count" id="tFilesCount">فایل‌ها</span>
-        <button onclick="loadFiles()"><span>↻</span><span id="tRefresh">تازه‌سازی</span></button>
+    <!-- File List -->
+    <div>
+      <div class="card-header" style="padding: 0 4px;">
+        <span>📂 فایل‌های اخیر</span>
+        <button class="btn-outline" onclick="loadFiles()" style="padding: 4px 10px; font-size: 11px;">↻ بروزرسانی</button>
       </div>
-      <div class="file-list" id="files">
-        <div class="empty" id="tLoading">در حال بارگذاری...</div>
+      <div class="file-list" id="fileList">
+        <div style="text-align: center; color: var(--text-muted); padding: 20px;">در حال بارگذاری...</div>
       </div>
     </div>
-  </div>
-</main>
 
-<footer>
-  <div class="footer-line">
-    <span id="tFooterMade">ساخته شده با</span>
-    <span class="heart">❤️</span>
-    <span id="tFooterBy">توسط</span>
-    <a class="footer-dev" href="https://t.me/iwSajaD" target="_blank" rel="noopener noreferrer">
-      <span>💬</span><span>@iwSajaD</span>
-    </a>
-  </div>
-  <div class="footer-sub" id="tFooterSub">انتقاد و پیشنهاد؟ خوشحال می‌شم بشنوم</div>
-</footer>
+  </main>
+</div>
+
+<!-- Mobile Nav (Visual only) -->
+<nav class="mobile-nav">
+  <a href="#" class="active"><span>📡</span>انتقال</a>
+  <a href="#"><span>📂</span>فایل‌ها</a>
+  <a href="#"><span>⚙️</span>تنظیمات</a>
+</nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// --- i18n ---
 const T = {
   fa: {
-    title: "📡 هم‌رسان",
-    subtitle: "انتقال فایل روی شبکه محلی — بدون اینترنت",
-    scanHint: "با دوربین گوشی این کد را اسکن کن<br>یا آدرس زیر را در مرورگر باز کن",
-    dropLabel: "برای انتخاب فایل <strong>ضربه بزن</strong><br>یا فایل را اینجا رها کن",
-    filesCount: (n) => n ? `${n} فایل` : 'فایل‌ها',
-    refresh: "تازه‌سازی",
-    loading: "در حال بارگذاری...",
-    noFiles: "هنوز فایلی نیست",
-    loadError: "خطا در بارگذاری",
-    copied: "آدرس کپی شد",
-    copyFailed: "کپی نشد",
-    deleteConfirm: "این فایل حذف شود؟",
-    deleted: "حذف شد",
-    deleteError: "خطا در حذف",
-    uploadDone: "آپلود کامل شد",
-    uploadError: "خطا در آپلود",
-    networkError: "خطای شبکه",
-    download: "دانلود",
+    copied: "کپی شد",
+    uploaded: "آپلود کامل شد",
+    error: "خطا",
     delete: "حذف",
-    loginTitle: "ورود",
-    loginHint: "PIN ۶ رقمی که در پنجره برنامه نمایش داده شده را وارد کن",
-    loginBtn: "ورود",
-    pinWrong: "PIN اشتباه است",
-    pinEmpty: "PIN را وارد کن",
-    clipTitle: "متن و لینک",
-    clipCopy: "کپی",
-    clipClear: "پاک",
-    clipSend: "ارسال",
-    clipPlaceholder: "اینجا بنویس یا پیست کن...",
-    clipEmpty: "هنوز متنی به اشتراک گذاشته نشده",
-    clipSent: "ارسال شد",
-    clipCopied: "متن کپی شد",
-    clipCleared: "پاک شد",
-    clipConfirmClear: "متن به اشتراک گذاشته شده پاک شود؟",
-    footerMade: "ساخته شده با",
-    footerBy: "توسط",
-    footerSub: "انتقاد و پیشنهاد؟ خوشحال می‌شم بشنوم",
-    pinLabel: "کد امنیتی",
-    pinHint: "این کد را روی گوشی وارد کن",
-    pinCopied: "کد کپی شد",
+    download: "دانلود",
+    confirmDelete: "این آیتم حذف شود؟",
+    pinCopied: "کد امنیتی کپی شد"
   },
   en: {
-    title: "📡 Hamresan",
-    subtitle: "Local network file transfer — no internet",
-    scanHint: "Scan this QR with your phone camera<br>or open the URL below in a browser",
-    dropLabel: "Tap to select files<br>or drop them here",
-    filesCount: (n) => n ? `${n} file${n>1?'s':''}` : 'Files',
-    refresh: "Refresh",
-    loading: "Loading...",
-    noFiles: "No files yet",
-    loadError: "Failed to load",
-    copied: "URL copied",
-    copyFailed: "Copy failed",
-    deleteConfirm: "Delete this file?",
-    deleted: "Deleted",
-    deleteError: "Delete failed",
-    uploadDone: "Upload complete",
-    uploadError: "Upload failed",
-    networkError: "Network error",
-    download: "Download",
+    copied: "Copied",
+    uploaded: "Upload complete",
+    error: "Error",
     delete: "Delete",
-    loginTitle: "Sign in",
-    loginHint: "Enter the 6-digit PIN shown in the app window",
-    loginBtn: "Sign in",
-    pinWrong: "Wrong PIN",
-    pinEmpty: "Enter the PIN",
-    clipTitle: "Text & Links",
-    clipCopy: "Copy",
-    clipClear: "Clear",
-    clipSend: "Send",
-    clipPlaceholder: "Type or paste here...",
-    clipEmpty: "No text shared yet",
-    clipSent: "Sent",
-    clipCopied: "Text copied",
-    clipCleared: "Cleared",
-    clipConfirmClear: "Clear the shared text?",
-    footerMade: "Made with",
-    footerBy: "by",
-    footerSub: "Feedback and suggestions? I'd love to hear from you",
-    pinLabel: "Security code",
-    pinHint: "Enter this on your phone",
-    pinCopied: "PIN copied",
+    download: "Download",
+    confirmDelete: "Delete this item?",
+    pinCopied: "PIN copied"
   }
 };
 
 let lang = localStorage.getItem('hr-lang') || 'fa';
 let theme = localStorage.getItem('hr-theme') || 'dark';
-let lastCount = -1;
-let authChecked = false;
-let lastClipText = '';
 let currentPin = '';
+let authChecked = false;
 
-const dropzone   = document.getElementById('dropzone');
-const fileInput  = document.getElementById('fileInput');
-const filesEl    = document.getElementById('files');
-const filesCount = document.getElementById('tFilesCount');
-const progressEl = document.getElementById('progress');
-const progressBar = document.getElementById('progressBar');
+// --- Elements ---
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const folderInput = document.getElementById('folderInput');
+const fileList = document.getElementById('fileList');
+const progressCard = document.getElementById('progressCard');
+const progressFill = document.getElementById('progressFill');
+const progressPercent = document.getElementById('progressPercent');
 const progressName = document.getElementById('progressName');
-const toastEl    = document.getElementById('toast');
-const urlBox     = document.getElementById('urlBox');
-const themeBtn   = document.getElementById('themeBtn');
-const langBtn    = document.getElementById('langBtn');
-const tTitle     = document.getElementById('tTitle');
-const tSubtitle  = document.getElementById('tSubtitle');
-const tScanHint  = document.getElementById('tScanHint');
-const tDropLabel = document.getElementById('tDropLabel');
-const tRefresh   = document.getElementById('tRefresh');
-const tLoading   = document.getElementById('tLoading');
 const loginOverlay = document.getElementById('loginOverlay');
-const loginBtn   = document.getElementById('loginBtn');
-const pinInput   = document.getElementById('pinInput');
+const pinInput = document.getElementById('pinInput');
+const loginBtn = document.getElementById('loginBtn');
 const loginError = document.getElementById('loginError');
-const tLoginTitle = document.getElementById('tLoginTitle');
-const tLoginHint  = document.getElementById('tLoginHint');
+const toastEl = document.getElementById('toast');
 
-const clipInput    = document.getElementById('clipInput');
-const clipSend     = document.getElementById('clipSend');
-const clipDisplay  = document.getElementById('clipDisplay');
-const clipCopyBtn  = document.getElementById('clipCopyBtn');
-const clipClearBtn = document.getElementById('clipClearBtn');
-const tClipTitle   = document.getElementById('tClipTitle');
-const tClipCopy    = document.getElementById('tClipCopy');
-const tClipClear   = document.getElementById('tClipClear');
+// --- Theme & Lang ---
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+  document.getElementById('langBtn').textContent = lang === 'fa' ? 'EN' : 'FA';
+}
 
-const tFooterMade = document.getElementById('tFooterMade');
-const tFooterBy   = document.getElementById('tFooterBy');
-const tFooterSub  = document.getElementById('tFooterSub');
+document.getElementById('themeBtn').onclick = () => {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('hr-theme', theme); applyTheme();
+};
+document.getElementById('langBtn').onclick = () => {
+  lang = lang === 'fa' ? 'en' : 'fa';
+  localStorage.setItem('hr-lang', lang); applyLang();
+};
 
-const pinBox   = document.getElementById('pinBox');
-const pinCode  = document.getElementById('pinCode');
-const tPinLabel = document.getElementById('tPinLabel');
-const tPinHint  = document.getElementById('tPinHint');
-
-function toast(msg, isError = false) {
+// --- Toast ---
+function toast(msg, isErr = false) {
   toastEl.textContent = msg;
-  toastEl.className = 'toast show' + (isError ? ' error' : '');
+  toastEl.className = 'toast show' + (isErr ? ' error' : '');
   clearTimeout(toast._t);
   toast._t = setTimeout(() => { toastEl.className = 'toast'; }, 2500);
 }
 
+// --- Formatting ---
 function fmtSize(n) {
+  if (n === 0) return '0 B';
   const u = ['B','KB','MB','GB','TB'];
-  let i = 0;
-  while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
-  return i === 0 ? `${n} ${u[i]}` : `${n.toFixed(2)} ${u[i]}`;
+  let i = 0; while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+  return `${n.toFixed(1)} ${u[i]}`;
 }
-
 function fmtDate(ts) {
   if (!ts) return '';
   const d = new Date(ts * 1000);
-  const pad = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-
-function fmtTimeOfDay(ts) {
+function fmtTime(ts) {
   if (!ts) return '';
   const d = new Date(ts * 1000);
-  const pad = n => String(n).padStart(2, '0');
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// --- Auth & Init ---
+async function checkAuth() {
+  try {
+    const r = await fetch('/api/auth-status');
+    const data = await r.json();
+    if (data.needs_pin && !data.authenticated) {
+      loginOverlay.classList.add('show');
+    } else {
+      loginOverlay.classList.remove('show');
+      initApp();
+    }
+  } catch { loginOverlay.classList.add('show'); }
 }
 
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', theme);
-  themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f172a' : '#38bdf8');
+async function doLogin() {
+  const pin = pinInput.value.replace(/\D/g, '');
+  if (pin.length < 6) { loginError.textContent = 'کد ۶ رقمی وارد کنید'; return; }
+  loginBtn.disabled = true;
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin }), credentials: 'same-origin'
+    });
+    if (r.ok) {
+      loginOverlay.classList.remove('show');
+      initApp();
+    } else {
+      loginError.textContent = 'کد اشتباه است';
+      pinInput.value = '';
+    }
+  } catch { loginError.textContent = 'خطای شبکه'; }
+  loginBtn.disabled = false;
 }
+loginBtn.onclick = doLogin;
+pinInput.onkeydown = e => { if (e.key === 'Enter') doLogin(); };
 
-function applyLang() {
-  const t = T[lang];
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
-  tTitle.textContent = t.title;
-  tSubtitle.textContent = t.subtitle;
-  tScanHint.innerHTML = t.scanHint;
-  tDropLabel.innerHTML = t.dropLabel;
-  tRefresh.textContent = t.refresh;
-  tLoading.textContent = t.loading;
-  tLoginTitle.textContent = t.loginTitle;
-  tLoginHint.textContent = t.loginHint;
-  loginBtn.textContent = t.loginBtn;
-  filesCount.textContent = t.filesCount(lastCount >= 0 ? lastCount : 0);
-  langBtn.textContent = lang === 'fa' ? 'EN' : 'فا';
-  tClipTitle.textContent = t.clipTitle;
-  tClipCopy.textContent = t.clipCopy;
-  tClipClear.textContent = t.clipClear;
-  clipSend.textContent = t.clipSend;
-  clipInput.placeholder = t.clipPlaceholder;
-  tFooterMade.textContent = t.footerMade;
-  tFooterBy.textContent = t.footerBy;
-  tFooterSub.textContent = t.footerSub;
-  tPinLabel.textContent = t.pinLabel;
-  tPinHint.textContent = t.pinHint;
-  renderClipboard(lastClipText);
-  if (authChecked) loadFiles();
-}
-
-themeBtn.addEventListener('click', () => {
-  theme = theme === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('hr-theme', theme);
-  applyTheme();
-});
-
-langBtn.addEventListener('click', () => {
-  lang = lang === 'fa' ? 'en' : 'fa';
-  localStorage.setItem('hr-lang', lang);
-  applyLang();
-});
-
+// --- Info & PIN ---
 async function loadInfo() {
   try {
     const r = await fetch('/api/info');
-    if (!r.ok) return;
     const data = await r.json();
-    urlBox.textContent = data.url || window.location.origin;
-
-    if (data.pin && data.pin.length > 0) {
+    document.getElementById('urlBox').textContent = data.url || window.location.host;
+    
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocal && data.pin) {
       currentPin = data.pin;
-      pinCode.textContent = data.pin;
-      pinBox.classList.add('show');
-    } else {
-      pinBox.classList.remove('show');
+      document.getElementById('pinCode').textContent = data.pin;
+      document.getElementById('pinBox').style.display = 'block';
     }
-  } catch {
-    urlBox.textContent = window.location.origin;
-  }
+  } catch {}
 }
 
-urlBox.addEventListener('click', async () => {
-  const t = T[lang];
-  try {
-    await navigator.clipboard.writeText(urlBox.textContent);
-    toast(t.copied);
-  } catch {
-    toast(t.copyFailed, true);
-  }
-});
-
-pinCode.addEventListener('click', async () => {
+function copyPin() {
   if (!currentPin) return;
-  try {
-    await navigator.clipboard.writeText(currentPin.replace(/\s/g, ''));
-    toast(T[lang].pinCopied);
-  } catch {}
-});
-
-function renderClipboard(text) {
-  lastClipText = text;
-  if (text) {
-    clipDisplay.classList.remove('empty');
-    clipDisplay.textContent = text;
-    clipCopyBtn.disabled = false;
-    clipClearBtn.disabled = false;
-  } else {
-    clipDisplay.classList.add('empty');
-    clipDisplay.textContent = T[lang].clipEmpty;
-    clipCopyBtn.disabled = true;
-    clipClearBtn.disabled = true;
-  }
+  navigator.clipboard.writeText(currentPin.replace(/\s/g, ''));
+  toast(T[lang].pinCopied);
 }
+window.copyPin = copyPin;
 
-async function loadClipboard() {
-  try {
-    const r = await fetch('/api/clipboard', { credentials: 'same-origin' });
-    if (r.status === 401) return;
-    const data = await r.json();
-    renderClipboard(data.text || '');
-  } catch {}
-}
-
-async function sendClipboard() {
-  const text = clipInput.value;
-  if (!text.trim()) return;
-  clipSend.disabled = true;
-  try {
-    const r = await fetch('/api/clipboard', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-      credentials: 'same-origin',
-    });
-    if (r.ok) {
-      clipInput.value = '';
-      toast(T[lang].clipSent);
-      await loadClipboard();
-    } else {
-      toast(T[lang].networkError, true);
-    }
-  } catch {
-    toast(T[lang].networkError, true);
-  }
-  clipSend.disabled = clipInput.value.trim() === '';
-}
-window.sendClipboard = sendClipboard;
-
-async function clearClipboard() {
-  if (!confirm(T[lang].clipConfirmClear)) return;
-  try {
-    const r = await fetch('/api/clipboard', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: '' }),
-      credentials: 'same-origin',
-    });
-    if (r.ok) {
-      toast(T[lang].clipCleared);
-      await loadClipboard();
-    }
-  } catch {}
-}
-window.clearClipboard = clearClipboard;
-
-async function copyClipboard() {
-  if (!lastClipText) return;
-  try {
-    await navigator.clipboard.writeText(lastClipText);
-    toast(T[lang].clipCopied);
-  } catch {
-    toast(T[lang].copyFailed, true);
-  }
-}
-window.copyClipboard = copyClipboard;
-
-clipInput.addEventListener('input', () => {
-  clipSend.disabled = clipInput.value.trim() === '';
-});
-
+// --- Files ---
 async function loadFiles() {
-  const t = T[lang];
   try {
-    const r = await fetch('/api/files', { credentials: 'same-origin' });
-    if (r.status === 401) { showLogin(); return; }
+    const r = await fetch('/api/files');
+    if (r.status === 401) { checkAuth(); return; }
     const data = await r.json();
     renderFiles(data.files || []);
-  } catch {
-    filesEl.innerHTML = `<div class="empty">${t.loadError}</div>`;
-  }
+  } catch {}
 }
 
 function renderFiles(files) {
-  const t = T[lang];
-  lastCount = files.length;
-  filesCount.textContent = t.filesCount(files.length);
   if (!files.length) {
-    filesEl.innerHTML = `<div class="empty">${t.noFiles}</div>`;
+    fileList.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px; font-size:13px;">هیچ فایلی یافت نشد</div>';
     return;
   }
   let html = '';
   for (const f of files) {
+    const icon = f.is_dir ? '📁' : '📄';
     const enc = encodeURIComponent(f.name);
     html += `
-      <div class="card file">
-        <div class="info">
-          <div class="name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</div>
-          <div class="meta">
-            <span class="chip"><span class="ic">📦</span>${fmtSize(f.size)}</span>
-            <span class="chip"><span class="ic">📅</span>${fmtDate(f.modified)}</span>
-            <span class="chip"><span class="ic">🕐</span>${fmtTimeOfDay(f.modified)}</span>
+      <div class="file-item">
+        <div class="file-icon">${icon}</div>
+        <div class="file-info">
+          <div class="file-name">${f.name}</div>
+          <div class="file-meta">
+            <span>${f.is_dir ? 'Folder' : fmtSize(f.size)}</span>
+            <span>•</span>
+            <span>${fmtDate(f.modified)} ${fmtTime(f.modified)}</span>
           </div>
         </div>
-        <a href="/download/${enc}" download title="${t.download}">⬇</a>
-        <button class="del" onclick="delFile('${enc}')" title="${t.delete}">🗑</button>
-      </div>`;
+        <div class="file-actions">
+          ${f.is_dir ? '' : `<a href="/download/${enc}" download title="دانلود">⬇</a>`}
+          <button class="del" onclick="delFile('${enc}')" title="حذف">🗑</button>
+        </div>
+      </div>
+    `;
   }
-  filesEl.innerHTML = html;
+  fileList.innerHTML = html;
 }
 
-async function delFile(encodedName) {
-  const t = T[lang];
-  if (!confirm(t.deleteConfirm)) return;
+async function delFile(name) {
+  if (!confirm(T[lang].confirmDelete)) return;
   try {
-    const r = await fetch('/api/files/' + encodedName, {
-      method: 'DELETE',
-      credentials: 'same-origin',
-    });
-    if (r.ok) { toast(t.deleted); loadFiles(); }
-    else toast(t.deleteError, true);
-  } catch { toast(t.deleteError, true); }
+    await fetch('/api/files/' + name, { method: 'DELETE' });
+    loadFiles();
+  } catch {}
 }
 window.delFile = delFile;
 
-async function uploadFiles(files) {
-  if (!files.length) return;
-  const t = T[lang];
-  const total = files.length;
-  for (let i = 0; i < files.length; i++) {
-    await uploadOne(files[i], i + 1, total);
+// --- Upload ---
+async function uploadFiles(fileListArr) {
+  if (!fileListArr.length) return;
+  const total = fileListArr.length;
+  
+  progressCard.classList.add('active');
+  let completed = 0;
+
+  for (let i = 0; i < total; i++) {
+    const file = fileListArr[i];
+    progressName.textContent = `(${i+1}/${total}) ${file.name}`;
+    progressFill.style.width = '0%';
+    progressPercent.textContent = '0%';
+
+    await new Promise((resolve) => {
+      const fd = new FormData();
+      
+      // Use webkitRelativePath if it exists (folder upload)
+      const filename = file.webkitRelativePath || file.name;
+      fd.append('file', file, filename);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/upload');
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          progressFill.style.width = pct + '%';
+          progressPercent.textContent = pct + '%';
+        }
+      };
+      xhr.onload = () => { if (xhr.status >= 200 && xhr.status < 300) { completed++; } resolve(); };
+      xhr.onerror = () => resolve();
+      xhr.send(fd);
+    });
   }
-  progressEl.classList.remove('active');
+
+  progressCard.classList.remove('active');
   loadFiles();
-  toast(t.uploadDone);
+  toast(T[lang].uploaded);
 }
 
-function uploadOne(file, idx, total) {
-  const t = T[lang];
-  return new Promise((resolve) => {
-    const fd = new FormData();
-    fd.append('file', file, file.name);
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/upload');
-    xhr.withCredentials = true;
-    progressEl.classList.add('active');
-    progressName.textContent = `(${idx}/${total}) ${file.name}`;
-    progressBar.style.width = '0%';
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) progressBar.style.width = (e.loaded / e.total * 100) + '%';
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) resolve();
-      else { toast(`${t.uploadError}: ${file.name}`, true); resolve(); }
-    };
-    xhr.onerror = () => { toast(t.networkError, true); resolve(); };
-    xhr.send(fd);
-  });
-}
-
-dropzone.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', () => {
-  uploadFiles(fileInput.files);
-  fileInput.value = '';
+// Drag & Drop
+dropzone.addEventListener('click', (e) => {
+  if (e.target.tagName !== 'BUTTON') fileInput.click();
 });
-['dragenter','dragover'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag'); }));
-['dragleave','drop'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag'); }));
+['dragenter', 'dragover'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag'); }));
 dropzone.addEventListener('drop', e => {
   if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
 });
 
-function showLogin() {
-  loginOverlay.classList.add('show');
-  pinInput.value = '';
-  loginError.textContent = '';
-  setTimeout(() => pinInput.focus(), 100);
-}
+document.getElementById('fileSelectBtn').onclick = (e) => { e.stopPropagation(); fileInput.click(); };
+document.getElementById('folderSelectBtn').onclick = (e) => { e.stopPropagation(); folderInput.click(); };
 
-function hideLogin() {
-  loginOverlay.classList.remove('show');
-}
+fileInput.onchange = () => { uploadFiles(fileInput.files); fileInput.value = ''; };
+folderInput.onchange = () => { uploadFiles(folderInput.files); folderInput.value = ''; };
 
-async function afterLogin() {
-  authChecked = true;
-  await loadInfo();
-  await Promise.all([loadFiles(), loadClipboard()]);
-  if (!afterLogin._interval) {
-    afterLogin._interval = setInterval(() => {
-      if (!authChecked) return;
-      loadFiles();
-      loadClipboard();
-    }, 3000);
-  }
-}
-
-async function doLogin() {
-  const t = T[lang];
-  const pin = pinInput.value.replace(/\D/g, '');
-  loginError.textContent = '';
-
-  if (!pin) { loginError.textContent = t.pinEmpty; return; }
-  if (pin.length < 6) { loginError.textContent = t.pinWrong; return; }
-
-  loginBtn.disabled = true;
+// --- Clipboard ---
+async function loadClipboard() {
   try {
-    const r = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin }),
-      credentials: 'same-origin',
-    });
-
-    if (!r.ok) {
-      loginError.textContent = t.pinWrong;
-      pinInput.value = '';
-      pinInput.focus();
-      return;
-    }
-
-    await new Promise(res => setTimeout(res, 150));
-
-    const check = await fetch('/api/auth-status', { credentials: 'same-origin' });
-    const data = await check.json();
-
-    if (data.authenticated) {
-      hideLogin();
-      await afterLogin();
-    } else {
-      loginError.textContent = t.pinWrong;
-      pinInput.value = '';
-      pinInput.focus();
-    }
-  } catch {
-    loginError.textContent = t.networkError;
-  } finally {
-    loginBtn.disabled = false;
-  }
-}
-
-loginBtn.addEventListener('click', doLogin);
-pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-pinInput.addEventListener('input', () => {
-  pinInput.value = pinInput.value.replace(/\D/g, '').slice(0, 6);
-});
-
-async function init() {
-  applyTheme();
-  applyLang();
-  try {
-    const r = await fetch('/api/auth-status', { credentials: 'same-origin' });
+    const r = await fetch('/api/clipboard');
+    if (r.status === 401) return;
     const data = await r.json();
-    if (data.needs_pin && !data.authenticated) {
-      showLogin();
-    } else {
-      await afterLogin();
-    }
-  } catch {
-    showLogin();
-  }
+    if (data.text) document.getElementById('clipInput').value = data.text;
+  } catch {}
 }
 
-init();
+async function sendClipboard() {
+  const text = document.getElementById('clipInput').value;
+  try {
+    await fetch('/api/clipboard', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    toast('ارسال شد');
+  } catch { toast('خطا', true); }
+}
+window.sendClipboard = sendClipboard;
+
+async function clearClipboard() {
+  if (!confirm('پاک شود؟')) return;
+  document.getElementById('clipInput').value = '';
+  await fetch('/api/clipboard', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: '' })
+  });
+  toast('پاک شد');
+}
+window.clearClipboard = clearClipboard;
+
+// --- Init App ---
+function initApp() {
+  authChecked = true;
+  loadInfo();
+  loadFiles();
+  loadClipboard();
+  setInterval(() => { if(authChecked) { loadFiles(); loadClipboard(); } }, 3000);
+}
+
+// Start
+applyTheme();
+applyLang();
+checkAuth();
 </script>
 </body>
 </html>

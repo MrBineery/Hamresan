@@ -9,6 +9,7 @@ pub struct FileInfo {
     pub size: u64,
     pub modified: Option<u64>,
     pub mime: String,
+    pub is_dir: bool,
 }
 
 #[derive(Clone)]
@@ -27,10 +28,11 @@ impl Storage {
 
         while let Some(entry) = entries.next_entry().await? {
             let meta = entry.metadata().await?;
-            if !meta.is_file() {
-                continue;
-            }
             let name = entry.file_name().to_string_lossy().to_string();
+            
+            // Skip hidden files/folders
+            if name.starts_with('.') { continue; }
+
             let modified = meta
                 .modified()
                 .ok()
@@ -42,9 +44,10 @@ impl Storage {
 
             files.push(FileInfo {
                 name,
-                size: meta.len(),
+                size: if meta.is_file() { meta.len() } else { 0 },
                 modified,
                 mime,
+                is_dir: meta.is_dir(),
             });
         }
 
@@ -52,23 +55,30 @@ impl Storage {
         Ok(files)
     }
 
-    pub async fn save_stream<R>(&self, name: &str, mut reader: R) -> Result<FileInfo>
+    pub async fn save_stream<R>(&self, relative_path: &str, mut reader: R) -> Result<FileInfo>
     where
         R: tokio::io::AsyncRead + Unpin,
     {
         use tokio::io::AsyncWriteExt;
-        let safe = sanitize(name);
-        let path = self.unique_path(&safe).await?;
-        let mut file = fs::File::create(&path).await?;
+        
+        let safe_path = sanitize_path(relative_path);
+        let full_path = self.unique_path(&safe_path).await?;
+        
+        // Create parent directories if they don't exist (for folder uploads)
+        if let Some(parent) = full_path.parent() {
+            fs::create_dir_all(parent).await?;
+        }
+
+        let mut file = fs::File::create(&full_path).await?;
         tokio::io::copy(&mut reader, &mut file).await?;
         file.flush().await?;
         file.sync_all().await.ok();
-        self.info(&path).await
+        
+        self.info(&full_path).await
     }
 
-    /// Resolve a filename to an absolute path, but only if it's inside our root.
     pub fn resolve(&self, name: &str) -> Option<PathBuf> {
-        let safe = sanitize(name);
+        let safe = sanitize_path(name);
         let path = self.root.join(&safe);
         let canonical = path.canonicalize().ok()?;
         let canonical = strip_extended_prefix(canonical);
@@ -82,9 +92,21 @@ impl Storage {
     }
 
     pub async fn delete(&self, name: &str) -> Result<bool> {
-        if let Some(path) = self.resolve(name) {
-            fs::remove_file(path).await?;
-            return Ok(true);
+        let safe = sanitize_path(name);
+        let path = self.root.join(&safe);
+        
+        if let Ok(canonical) = path.canonicalize() {
+            let canonical = strip_extended_prefix(canonical);
+            if !canonical.starts_with(&self.root) {
+                return Ok(false);
+            }
+            if canonical.is_file() {
+                fs::remove_file(canonical).await?;
+                return Ok(true);
+            } else if canonical.is_dir() {
+                fs::remove_dir_all(canonical).await?;
+                return Ok(true);
+            }
         }
         Ok(false)
     }
@@ -106,19 +128,21 @@ impl Storage {
 
         Ok(FileInfo {
             name,
-            size: meta.len(),
+            size: if meta.is_file() { meta.len() } else { 0 },
             modified,
             mime,
+            is_dir: meta.is_dir(),
         })
     }
 
-    async fn unique_path(&self, name: &str) -> Result<PathBuf> {
-        let path = self.root.join(name);
+    async fn unique_path(&self, relative_path: &str) -> Result<PathBuf> {
+        let path = self.root.join(relative_path);
         if !path.exists() {
             return Ok(path);
         }
 
-        let path_obj = Path::new(name);
+        let path_obj = Path::new(relative_path);
+        let parent = path_obj.parent().unwrap_or_else(|| Path::new(""));
         let stem = path_obj
             .file_stem()
             .map(|s| s.to_string_lossy().to_string())
@@ -129,28 +153,35 @@ impl Storage {
             .unwrap_or_default();
 
         for i in 1..10000 {
-            let candidate = self.root.join(format!("{}-{}{}", stem, i, ext));
+            let candidate_name = format!("{}-{}{}", stem, i, ext);
+            let candidate = self.root.join(parent).join(candidate_name);
             if !candidate.exists() {
                 return Ok(candidate);
             }
         }
-        anyhow::bail!("could not find unique name for {}", name)
+        anyhow::bail!("could not find unique name for {}", relative_path)
     }
 }
 
-fn sanitize(name: &str) -> String {
-    let cleaned: String = name
-        .chars()
-        .map(|c| match c {
-            '/' | '\\' | '\0' | ':' | '*' | '?' | '"' | '<' | '>' | '|' => '_',
-            c => c,
+fn sanitize_path(path: &str) -> String {
+    let parts: Vec<String> = path
+        .replace('\\', "/") // Normalize Windows paths
+        .split('/')
+        .filter(|s| !s.is_empty() && *s != "." && *s != "..")
+        .map(|s| {
+            s.chars()
+                .map(|c| match c {
+                    '\0' | ':' | '*' | '?' | '"' | '<' | '>' | '|' => '_',
+                    c => c,
+                })
+                .collect::<String>()
         })
         .collect();
-    let trimmed = cleaned.trim_start_matches('.').to_string();
-    if trimmed.is_empty() {
-        "file".into()
+
+    if parts.is_empty() {
+        "unnamed".into()
     } else {
-        trimmed
+        parts.join("/")
     }
 }
 

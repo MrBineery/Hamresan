@@ -34,7 +34,7 @@ pub fn router(state: AppState) -> Router {
             post(upload).layer(DefaultBodyLimit::disable()),
         )
         .route("/api/files/:name", delete(delete_file))
-        .route("/download/:name", get(download))
+        .route("/download/*path", get(download)) // Changed to *path for subfolders
         .route(
             "/api/clipboard",
             get(get_clipboard).post(set_clipboard),
@@ -132,20 +132,13 @@ async fn auth_status(State(state): State<AppState>, headers: HeaderMap) -> impl 
 // ---------------- Static pages ----------------
 
 async fn index() -> Html<&'static str> {
-    Html(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/web/index.html")))
+    Html(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/frontend/dist/index.html")))
 }
 
-async fn info(State(state): State<AppState>, headers: HeaderMap) -> impl IntoResponse {
-    // ✅ PIN فقط برای localhost (پنجره ویندوز) فرستاده می‌شه
-    let pin = if is_localhost(&headers) {
-        state.pin_display.clone()
-    } else {
-        String::new()
-    };
-
+async fn info(State(state): State<AppState>) -> impl IntoResponse {
     Json(json!({
         "url": state.url,
-        "pin": pin,
+        "pin": state.pin_display.clone(),
     }))
 }
 
@@ -158,7 +151,7 @@ async fn qr_svg(State(state): State<AppState>) -> Response {
         .render::<svg::Color>()
         .min_dimensions(240, 240)
         .quiet_zone(true)
-        .dark_color(svg::Color("#0f172a"))
+        .dark_color(svg::Color("#0f131d"))
         .light_color(svg::Color("#ffffff"))
         .build();
     Response::builder()
@@ -218,13 +211,17 @@ async fn upload(State(state): State<AppState>, mut multipart: Multipart) -> impl
                     .into_response();
             }
         };
+        
+        // Use file_name() which can contain relative paths for folders (e.g., "my_folder/photo.jpg")
         let filename = field
             .file_name()
             .map(|s| s.to_string())
             .unwrap_or_else(|| "upload.bin".into());
+            
         let reader = StreamReader::new(
             field.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e)),
         );
+        
         match state.storage.save_stream(&filename, reader).await {
             Ok(info) => {
                 tracing::info!("saved {} ({} bytes)", info.name, info.size);
