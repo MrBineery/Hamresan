@@ -11,7 +11,7 @@
 </p>
 <br>
 <p align="center">
-  <img src="screenshots/mobile-1.png" alt="نسخه موبایل ۱" width="300">
+  <img src="screenshots/mobile-1.png" alt="" width="300">
   <br>
   <img src="screenshots/mobile-2.png" alt="نسخه موبایل ۲" width="300">
 </p>
